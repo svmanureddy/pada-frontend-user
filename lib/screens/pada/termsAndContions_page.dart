@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:provider/provider.dart';
 import '../../core/colors.dart';
-import '../../core/providers/app_provider.dart';
+import '../../widgets/loading_indicator.dart';
 
 class TermsAndConditionsPage extends StatefulWidget {
   // final dynamic vehicleList;
@@ -15,122 +15,132 @@ class TermsAndConditionsPage extends StatefulWidget {
 }
 
 class _TermsAndConditionsPageState extends State<TermsAndConditionsPage> {
-
   @override
   Widget build(BuildContext context) {
-    final appProvider = Provider.of<AppProvider>(context, listen: false);
     return Scaffold(
       resizeToAvoidBottomInset: true,
-      backgroundColor: lightWhiteColor,
-      body: SafeArea(
-          child: Stack(
-            children: [
-              SizedBox(
-                height: MediaQuery.of(context).size.height,
-                child: Column(
-                  children: [
-                    Container(
-                      height: MediaQuery.of(context).size.height * 0.45,
-                      width: MediaQuery.of(context).size.width,
-                      decoration: const BoxDecoration(
-                        color: primaryColor,
+      backgroundColor: backgroundColor,
+      body: Column(
+        children: [
+          // Header Section
+          Container(
+            width: MediaQuery.of(context).size.width,
+            padding: const EdgeInsets.only(top: 20, bottom: 20),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  primaryColor,
+                  Color(0xFF003D9E),
+                  secondaryColor,
+                ],
+              ),
+            ),
+            child: SafeArea(
+              bottom: false,
+              child: Stack(
+                children: [
+                  // Decorative circles in background
+                  Positioned(
+                    top: -60,
+                    right: -50,
+                    child: Container(
+                      width: 180,
+                      height: 180,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: pureWhite.withOpacity(0.08),
                       ),
                     ),
-                  ],
+                  ),
+                  Positioned(
+                    top: 30,
+                    left: -30,
+                    child: Container(
+                      width: 110,
+                      height: 110,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: pureWhite.withOpacity(0.06),
+                      ),
+                    ),
+                  ),
+                  // Main content
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    child: Row(
+                      children: [
+                        InkWell(
+                          onTap: () {
+                            Navigator.pop(context);
+                          },
+                          borderRadius: BorderRadius.circular(8),
+                          child: Container(
+                            width: 40,
+                            height: 40,
+                            decoration: BoxDecoration(
+                              color: pureWhite.withOpacity(0.2),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: const Icon(
+                              Icons.arrow_back_ios_rounded,
+                              color: pureWhite,
+                              size: 20,
+                            ),
+                          ),
+                        ),
+                        const Spacer(),
+                        Text(
+                          "Terms and Conditions",
+                          style: GoogleFonts.inter(
+                            color: pureWhite,
+                            fontSize: 20,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                        const Spacer(),
+                        const SizedBox(width: 40), // Balance for back button
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          // Content Section
+          Expanded(
+            child: Container(
+              margin: const EdgeInsets.only(top: 20, left: 16, right: 16, bottom: 16),
+              decoration: BoxDecoration(
+                color: pureWhite,
+                borderRadius: BorderRadius.circular(20),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.08),
+                    blurRadius: 20,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(20),
+                child: InAppWebView(
+                  onLoadStart: (con, uri) {
+                    LoadingOverlay.of(context).show();
+                  },
+                  onLoadStop: (con, uri) {
+                    LoadingOverlay.of(context).hide();
+                  },
+                  initialUrlRequest: URLRequest(
+                    url: WebUri("https://snowcodestechbiz.com/portfolio/"),
+                  ),
                 ),
               ),
-              Positioned(
-                  child: Center(
-                    child: SizedBox(
-                      height: MediaQuery.of(context).size.height * 0.8,
-                      width: MediaQuery.of(context).size.width * 0.95,
-                      child: Card(
-                        color: Colors.white,
-                        child: SingleChildScrollView(
-                          child: Column(children: [
-                            Padding(
-                              padding: const EdgeInsets.all(15.0),
-                              child: Row(
-                                children: [
-                                  Padding(
-                                    padding: const EdgeInsets.only(left: 10.0),
-                                    child: InkWell(
-                                      child: const Icon(
-                                        Icons.arrow_back_ios,
-                                        color: pureBlack,
-                                      ),
-                                      onTap: () {
-                                        Navigator.pop(context);
-                                      },
-                                    ),
-                                  ),
-                                  const Spacer(),
-                                  Text(
-                                    "Terms and Conditions",
-                                    style: GoogleFonts.inter(
-                                        color: pureBlack,
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.w500),
-                                  ),
-                                  const Spacer(),
-                                  const Icon(
-                                    Icons.arrow_back_ios,
-                                    color: pureWhite,
-                                  ),
-                                ],
-                              ),
-                            ),
-                            // Padding(
-                            //     padding: const EdgeInsets.all(10.0),
-                            //     child:  Card(
-                            //       child: ListTile(
-                            //         onTap: (){},
-                            //         leading: SvgPicture.asset(
-                            //           'assets/images/call.svg',
-                            //           fit: BoxFit.fill,
-                            //           height: 15,
-                            //           width: 15,
-                            //           color: buttonColor,
-                            //         ),
-                            //         title: Text(
-                            //           "+91 9999999999",
-                            //           style: GoogleFonts.inter(
-                            //               color: pureBlack,
-                            //               fontSize: 16,
-                            //               fontWeight: FontWeight.w400),
-                            //         ),
-                            //       ),
-                            //     )
-                            // ),
-                            // Padding(
-                            //     padding: const EdgeInsets.all(10.0),
-                            //     child:  Card(
-                            //       child: ListTile(
-                            //         onTap: (){},
-                            //         leading: SvgPicture.asset(
-                            //           'assets/images/mail.svg',
-                            //           fit: BoxFit.fill,
-                            //           height: 15,
-                            //           width: 15,
-                            //           color: buttonColor,
-                            //         ),
-                            //         title: Text(
-                            //           "na@pada.com",
-                            //           style: GoogleFonts.inter(
-                            //               color: pureBlack,
-                            //               fontSize: 16,
-                            //               fontWeight: FontWeight.w400),
-                            //         ),
-                            //       ),
-                            //     )
-                            // )
-                          ]),
-                        ),
-                      ),
-                    ),
-                  ))
-            ],
-          )),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

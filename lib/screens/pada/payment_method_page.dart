@@ -34,7 +34,6 @@ class PaymentMethodPage extends StatefulWidget {
 }
 
 class _PaymentMethodPageState extends State<PaymentMethodPage> {
-  final Prog _prog = Prog();
   bool isEnabled = false;
   dynamic _paymentMethod = 1;
   dynamic selectedPaymentMethod;
@@ -53,9 +52,28 @@ class _PaymentMethodPageState extends State<PaymentMethodPage> {
 
   book() async {
     final appProvider = Provider.of<AppProvider>(context, listen: false);
+    
+    // Check if pickup and drop-off locations are the same
+    if (appProvider.pickupAddress != null && appProvider.dropAddress != null) {
+      final pickupLat = appProvider.pickupAddress!.latlng?.latitude;
+      final pickupLng = appProvider.pickupAddress!.latlng?.longitude;
+      final dropLat = appProvider.dropAddress!.latlng?.latitude;
+      final dropLng = appProvider.dropAddress!.latlng?.longitude;
+      
+      if (pickupLat != null && pickupLng != null && 
+          dropLat != null && dropLng != null &&
+          pickupLat == dropLat && pickupLng == dropLng) {
+        notificationService.showToast(
+          context,
+          "Both locations shouldn't be same",
+          type: NotificationType.error,
+        );
+        return;
+      }
+    }
+    
     LoadingOverlay.of(context).show();
     debugPrint(".....vahicle ${widget.vehicleDetail.sId}");
-    var errorText = "";
     var paymentDet = {
       "paymentType": _paymentMethod == 1 ? "wallet" : "cash", //paymentType,
       "price": num.parse(widget.totalPrice.toString()),
@@ -74,17 +92,17 @@ class _PaymentMethodPageState extends State<PaymentMethodPage> {
           .then((value) {
         LoadingOverlay.of(context).hide();
         debugPrint("order resp:::::::$value");
-        errorText = value['message'];
         if (value['success']) {
           Navigator.pushReplacement(
               context,
               MaterialPageRoute(
-                  builder: (context) =>
-                      OrderMapPage(orderId: value['data']['_id'])));
+                  builder: (context) => OrderMapPage(
+                        orderId: value['data']['_id'],
+                        vehicleName: widget.vehicleDetail.name,
+                      )));
         } else {
           debugPrint("error::::1 ${value['message']}");
           LoadingOverlay.of(context).hide();
-          errorText = value['message'];
           notificationService.showToast(context, value['message'],
               type: NotificationType.error);
         }
@@ -94,15 +112,15 @@ class _PaymentMethodPageState extends State<PaymentMethodPage> {
       if (context.mounted) {
         LoadingOverlay.of(context).hide();
         if (e is ClientException) {
-          print("errorr::::${e.message.toString()}");
+          debugPrint("errorr::::${e.message.toString()}");
           notificationService.showToast(context, e.message.toString(),
               type: NotificationType.error);
         } else if (e is ServerException) {
-          print("errorr::::${e.message.toString()}");
+          debugPrint("errorr::::${e.message.toString()}");
           notificationService.showToast(context, e.message.toString(),
               type: NotificationType.error);
         } else if (e is HttpException) {
-          print("errorr::::${e.message.toString()}");
+          debugPrint("errorr::::${e.message.toString()}");
           notificationService.showToast(context, e.message.toString(),
               type: NotificationType.error);
         }
@@ -112,7 +130,6 @@ class _PaymentMethodPageState extends State<PaymentMethodPage> {
 
   @override
   Widget build(BuildContext context) {
-    final appProvider = Provider.of<AppProvider>(context, listen: false);
     return Scaffold(
       resizeToAvoidBottomInset: false,
       backgroundColor: pureWhite,
@@ -218,7 +235,7 @@ class _PaymentMethodPageState extends State<PaymentMethodPage> {
                                     value: 1,
                                     groupValue: _paymentMethod,
                                     onChanged: (val) {
-                                      print("Radio $val");
+                                      debugPrint("Radio $val");
                                       selectedPaymentMethod = val;
                                       _paymentMethod = val;
                                       setState(() {});
@@ -254,7 +271,7 @@ class _PaymentMethodPageState extends State<PaymentMethodPage> {
                                     value: 2,
                                     groupValue: _paymentMethod,
                                     onChanged: (val) {
-                                      print("Radio $val");
+                                      debugPrint("Radio $val");
                                       selectedPaymentMethod = val;
                                       _paymentMethod = val;
                                       setState(() {});

@@ -1,4 +1,3 @@
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 
 import '../errors/exceptions.dart';
@@ -58,25 +57,29 @@ class AuthProvider extends ChangeNotifier {
   Future getOtp({required String phoneNumber}) async {
     try {
       var response = await apiService.getOtp(mobileNumber: phoneNumber);
-      // print(response.toString());
+      // debugPrint(response.toString());
       return response;
     } catch (e) {
-      print("msg::msg:: $e");
-      print(e is AppException ? e.message : e.toString());
+      debugPrint("msg::msg:: $e");
+      debugPrint(e is AppException ? e.message : e.toString());
       rethrow;
     }
   }
 
   Future mobileSignIn({required String otp}) async {
     try {
+      // Provide a stable fallback for simulators where FCM token may be null/empty
+      if (deviceToken.trim().isEmpty) {
+        deviceToken = 'simulator-${DateTime.now().millisecondsSinceEpoch}';
+      }
       var response = await apiService.mobileSignIn(
           verificationCode: otp,
           mobileNumber: phoneNumber,
           deviceToken: deviceToken);
-      // print(response.toString());
+      // debugPrint(response.toString());
       return response;
     } catch (e) {
-      // print(e is AppException ? e.message : e.toString());
+      // debugPrint(e is AppException ? e.message : e.toString());
       rethrow;
     }
   }

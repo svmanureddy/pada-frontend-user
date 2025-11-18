@@ -68,7 +68,7 @@
 //   // Function to handle map drag
 //   Future<void> _onMapDrag(LatLng newPosition) async {
 //     // Perform any other actions based on the new position
-//     print(
+//     debugPrint(
 //         'New marker position: ${newPosition.latitude}, ${newPosition.longitude}');
 //     _markers.clear();
 //     _markers = {

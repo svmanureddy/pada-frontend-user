@@ -1,294 +1,354 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:deliverapp/widgets/button.dart';
 import 'package:intl/intl.dart';
-import '../../core/models/vehicle_list_model.dart' as vehicle;
 
 import '../core/colors.dart';
 import '../core/constants.dart';
 import '../core/models/history_model.dart' as order;
 
 class ConnectHistoryListCardWidget extends StatelessWidget {
-  const ConnectHistoryListCardWidget(
-      {required this.historyList,super.key});
+  const ConnectHistoryListCardWidget({required this.historyList, super.key});
   final order.Data historyList;
+
+  String _getStatusText(num? status) {
+    if (status == null) return "Unknown";
+    switch (status.toString()) {
+      case "1":
+        return "Waiting";
+      case "2":
+        return "Accepted";
+      case "3":
+        return "On the way to pickup";
+      case "4":
+        return "Order collected";
+      case "5":
+        return "On the way to deliver";
+      case "6":
+        return "Reached destination";
+      case "7":
+        return "Completed";
+      case "10":
+        return "Expired";
+      default:
+        return "Cancelled";
+    }
+  }
+
+  Color _getStatusColor(num? status) {
+    if (status == null) return cancelStatusColor;
+    if (status.toString() == "7") {
+      return Colors.green;
+    }
+    return cancelStatusColor;
+  }
+
+  IconData _getStatusIcon(num? status) {
+    if (status == null) return Icons.cancel;
+    if (status.toString() == "7") {
+      return Icons.done;
+    }
+    return Icons.cancel;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 5),
-      child: Container(
-          width: double.infinity,
+      padding: const EdgeInsets.only(bottom: 16.0),
+      child: Card(
+        elevation: 4,
+        shadowColor: Colors.black.withOpacity(0.08),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Container(
           decoration: BoxDecoration(
-              color: pureWhite,
-              borderRadius: BorderRadius.circular(5),
-              boxShadow: [
-                BoxShadow(
-                    color: greyLight1.withOpacity(0.6),
-                    blurRadius: 6,
-                    spreadRadius: 3,
-                    offset: const Offset(1, 1) //New
-                    )
-              ]),
+            color: pureWhite,
+            borderRadius: BorderRadius.circular(16),
+          ),
           child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 15),
-              child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.center,
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Header Section - Vehicle Info
+                Row(
                   children: [
-                    ListTile(
-                      minLeadingWidth: 0,
-                      contentPadding: EdgeInsets.zero,
-                      leading:
-                          historyList.vehicleImage.toString().contains(".svg")
-                              ? SvgPicture.network(
-                                  '$imageUrl${historyList.vehicleImage}',
-                                  height: 50,
-                                  width: 50,
-                                  fit: BoxFit.contain)
-                              : Image.network(
-                                  '$imageUrl${historyList.vehicleImage}',
-                                  height: 50,
-                                  width: 50,
-                                  fit: BoxFit.contain),
-                      title: Text(
-                        historyList.vehicleName!,
-                        style: GoogleFonts.inter(
-                            color: pureBlack,
-                            fontSize: 14,
-                            fontWeight: FontWeight.w500),
+                    // Vehicle Icon
+                    Container(
+                      width: 56,
+                      height: 56,
+                      decoration: BoxDecoration(
+                        color: secondaryColor.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(12),
                       ),
-                      subtitle: Text(
-                        DateFormat("MMM dd'th' yyyy")
-                            .format(DateTime.parse(historyList.createdAt!)),
-                        style: GoogleFonts.inter(
-                            color: pureBlack,
-                            fontSize: 10,
-                            fontWeight: FontWeight.w400),
-                      ),
-                      trailing: Text(
-                        "$rupeeSymbol ${historyList.totalAmount}",
-                        style: GoogleFonts.inter(
-                            color: pureBlack,
-                            fontSize: 14,
-                            fontWeight: FontWeight.w500),
+                      child: Center(
+                        child:
+                            historyList.vehicleImage.toString().contains(".svg")
+                                ? SvgPicture.network(
+                                    '$imageUrl${historyList.vehicleImage}',
+                                    height: 40,
+                                    width: 40,
+                                    fit: BoxFit.contain)
+                                : Image.network(
+                                    '$imageUrl${historyList.vehicleImage}',
+                                    height: 40,
+                                    width: 40,
+                                    fit: BoxFit.contain),
                       ),
                     ),
-                    Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.center,
+                    const SizedBox(width: 12),
+                    // Vehicle Name and Date
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Expanded(
-                            child: Container(
-                              color: transparentColor,
-                              child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Padding(
-                                      padding: const EdgeInsets.only(
-                                          right: 10.0, top: 3),
-                                      child: Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.center,
-                                        children: [
-                                          SvgPicture.asset(
-                                              'assets/images/source_ring.svg',
-                                              width: 12,
-                                              height: 12),
-                                          Container(
-                                            margin: const EdgeInsets.all(5),
-                                            width: 1,
-                                            height: 45,
-                                            color: Colors.black,
-                                          ),
-                                          SvgPicture.asset(
-                                              'assets/images/dest_marker.svg',
-                                              width: 12,
-                                              height: 12),
-                                        ],
-                                      ),
-                                    ),
-                                    Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.start,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Column(
-                                          children: [
-                                            Container(
-                                                width: MediaQuery.of(context)
-                                                        .size
-                                                        .width *
-                                                    0.7,
-                                                color: transparentColor,
-                                                child: Text(
-                                                    /*'Sarjapur'*/ "${historyList.pickUp!.userName} : ${historyList.pickUp!.phoneNumber}",
-                                                    textAlign: TextAlign.start,
-                                                    // overflow: TextOverflow.ellipsis,
-                                                    maxLines: 2,
-                                                    softWrap: true,
-                                                    style: GoogleFonts.poppins(
-                                                        color: pureBlack,
-                                                        fontSize: 14,
-                                                        fontWeight:
-                                                            FontWeight.w400))),
-                                            Container(
-                                                width: MediaQuery.of(context)
-                                                        .size
-                                                        .width *
-                                                    0.7,
-                                                color: transparentColor,
-                                                child: Text(
-                                                    /*'Sarjapur'*/ "${historyList.pickUp!.address}",
-                                                    textAlign: TextAlign.start,
-                                                    // overflow: TextOverflow.ellipsis,
-                                                    maxLines: 2,
-                                                    softWrap: true,
-                                                    overflow:
-                                                        TextOverflow.ellipsis,
-                                                    style: GoogleFonts.poppins(
-                                                        color: pureBlack,
-                                                        fontSize: 11,
-                                                        fontWeight:
-                                                            FontWeight.w400))),
-                                          ],
-                                        ),
-                                        const SizedBox(height: 10),
-                                        Column(
-                                          children: [
-                                            Container(
-                                                width: MediaQuery.of(context)
-                                                        .size
-                                                        .width *
-                                                    0.7,
-                                                color: transparentColor,
-                                                child: Text(
-                                                    /*'Marathahalli Rd'*/ "${historyList.drop!.userName}  : ${historyList.drop!.phoneNumber}  ",
-                                                    textAlign: TextAlign.start,
-                                                    // overflow: TextOverflow.ellipsis,
-                                                    maxLines: 2,
-                                                    softWrap: true,
-                                                    style: GoogleFonts.poppins(
-                                                        color: pureBlack,
-                                                        fontSize: 14,
-                                                        fontWeight:
-                                                            FontWeight.w400))),
-                                            Container(
-                                                width: MediaQuery.of(context)
-                                                        .size
-                                                        .width *
-                                                    0.7,
-                                                color: transparentColor,
-                                                child: Text(
-                                                    /*'Marathahalli Rd'*/ "${historyList.drop!.address}",
-                                                    textAlign: TextAlign.start,
-                                                    // overflow: TextOverflow.ellipsis,
-                                                    maxLines: 2,
-                                                    softWrap: true,
-                                                    overflow:
-                                                        TextOverflow.ellipsis,
-                                                    style: GoogleFonts.poppins(
-                                                        color: pureBlack,
-                                                        fontSize: 11,
-                                                        fontWeight:
-                                                            FontWeight.w400))),
-                                          ],
-                                        )
-                                      ],
-                                    ),
-                                  ]),
+                          Text(
+                            historyList.vehicleName ?? "Unknown Vehicle",
+                            style: GoogleFonts.inter(
+                              color: pureBlack,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
                             ),
                           ),
-                        ]),
-                    Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 8.0),
-                        child: Container()
-                        // Divider(height: 1, thickness: 1, color: greyLight1),
-                        ),
+                          const SizedBox(height: 4),
+                          Text(
+                            DateFormat("MMM dd'th' yyyy")
+                                .format(DateTime.parse(historyList.createdAt!)),
+                            style: GoogleFonts.inter(
+                              color: greyText,
+                              fontSize: 12,
+                              fontWeight: FontWeight.w400,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    // Price
                     Container(
-                        color: transparentColor,
-                        child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Row(
-                                children: [
-                                  Padding(
-                                    padding: const EdgeInsets.only(right: 3.0),
-                                    child: Icon(
-                                      historyList.status.toString() == "7"
-                                          ? Icons.done
-                                          : Icons.cancel,
-                                      color:
-                                          historyList.status.toString() == "7"
-                                              ? Colors.green
-                                              : cancelStatusColor,
-                                      size: 18,
-                                    ),
-                                  ),
-                                  Text(
-                                      /*'Dropped'*/ historyList.status
-                                                  .toString() ==
-                                              "1"
-                                          ? "Waiting"
-                                          : historyList.status.toString() == "2"
-                                              ? "Accepted"
-                                              : historyList.status.toString() ==
-                                                      "3"
-                                                  ? "On the way to pickup"
-                                                  : historyList.status
-                                                              .toString() ==
-                                                          "4"
-                                                      ? "Order collected"
-                                                      : historyList.status
-                                                                  .toString() ==
-                                                              "5"
-                                                          ? "On the way to deliver"
-                                                          : historyList.status
-                                                                      .toString() ==
-                                                                  "6"
-                                                              ? "Reached destination"
-                                                              : historyList
-                                                                          .status
-                                                                          .toString() ==
-                                                                      "7"
-                                                                  ? "Completed"
-                                                                  : historyList
-                                                                              .status
-                                                                              .toString() ==
-                                                                          "10"
-                                                                      ? "Expired"
-                                                                      : "Cancelled",
-                                      textAlign: TextAlign.start,
-                                      overflow: TextOverflow.ellipsis,
-                                      maxLines: 1,
-                                      style: GoogleFonts.poppins(
-                                          color: historyList.status!
-                                                      .toString()
-                                                      .toLowerCase() ==
-                                                  "7"
-                                              ? Colors.green
-                                              : cancelStatusColor,
-                                          fontSize: 11,
-                                          fontWeight: FontWeight.w500)),
-                                ],
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 8,
+                      ),
+                      decoration: BoxDecoration(
+                        color: secondaryColor.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Text(
+                        "$rupeeSymbol ${historyList.totalAmount}",
+                        style: GoogleFonts.inter(
+                          color: secondaryColor,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 20),
+                // Address Section
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Icons Column
+                    Column(
+                      children: [
+                        Container(
+                          width: 24,
+                          height: 24,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: Colors.green,
+                              width: 2,
+                            ),
+                          ),
+                          child: Center(
+                            child: Container(
+                              width: 10,
+                              height: 10,
+                              decoration: const BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: Colors.green,
                               ),
-                              SizedBox(
-                                  height: 22,
-                                  child: CustomButton(
-                                    buttonLabel: "${historyList.paymentType}",
-                                    backGroundColor: buttonColor,
-                                    onTap: () {},
-                                    buttonWidth: 110,
-                                    buttonTextSize: 12,
-                                    fontWeight: FontWeight.w700,
-                                  )),
-                            ]))
-                  ]))),
+                            ),
+                          ),
+                        ),
+                        Container(
+                          margin: const EdgeInsets.symmetric(vertical: 4),
+                          width: 2,
+                          height: 50,
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              begin: Alignment.topCenter,
+                              end: Alignment.bottomCenter,
+                              colors: [
+                                Colors.green.withOpacity(0.5),
+                                Colors.red.withOpacity(0.5),
+                              ],
+                            ),
+                          ),
+                        ),
+                        Container(
+                          width: 24,
+                          height: 24,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: Colors.red.withOpacity(0.1),
+                          ),
+                          child: Icon(
+                            Icons.location_on,
+                            size: 18,
+                            color: Colors.red,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(width: 12),
+                    // Addresses Column
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Pickup Address
+                          Container(
+                            padding: const EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              color: Colors.green.withOpacity(0.05),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  "${historyList.pickUp!.userName} : ${historyList.pickUp!.phoneNumber}",
+                                  style: GoogleFonts.inter(
+                                    color: pureBlack,
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  historyList.pickUp!.address ?? "",
+                                  style: GoogleFonts.inter(
+                                    color: greyText,
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w400,
+                                  ),
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+                          // Dropoff Address
+                          Container(
+                            padding: const EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              color: Colors.red.withOpacity(0.05),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  "${historyList.drop!.userName} : ${historyList.drop!.phoneNumber}",
+                                  style: GoogleFonts.inter(
+                                    color: pureBlack,
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  historyList.drop!.address ?? "",
+                                  style: GoogleFonts.inter(
+                                    color: greyText,
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w400,
+                                  ),
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+                const Divider(
+                  height: 1,
+                  thickness: 1,
+                  color: Color(0xFFEAEAEA),
+                ),
+                const SizedBox(height: 12),
+                // Status and Payment Section
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    // Status Badge
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 6,
+                      ),
+                      decoration: BoxDecoration(
+                        color: _getStatusColor(historyList.status)
+                            .withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            _getStatusIcon(historyList.status),
+                            size: 16,
+                            color: _getStatusColor(historyList.status),
+                          ),
+                          const SizedBox(width: 6),
+                          Text(
+                            _getStatusText(historyList.status),
+                            style: GoogleFonts.inter(
+                              color: _getStatusColor(historyList.status),
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    // Payment Type
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 6,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.green.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Text(
+                        "${historyList.paymentType ?? 'cash'}",
+                        style: GoogleFonts.inter(
+                          color: Colors.green,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
     );
   }
 }

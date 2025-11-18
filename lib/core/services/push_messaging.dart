@@ -7,7 +7,7 @@ import 'package:push/push.dart';
 import 'package:flutter/material.dart';
 
 import '../../routers/routing_constants.dart';
-import '../../screens/pada/dashboard_page.dart';
+import '../../screens/pada/bottom_navigation_page.dart';
 import 'navigation_service.dart';
 
 class PushNotificationServiceByPush {
@@ -25,7 +25,7 @@ class PushNotificationServiceByPush {
     // Handle notification launching app from terminated state
     Push.instance.notificationTapWhichLaunchedAppFromTerminated.then((data) {
       if (data == null) {
-        print("App was not launched by tapping a notification");
+        debugPrint("App was not launched by tapping a notification");
       } else {
         _handleNavigation(data);
       }
@@ -33,17 +33,13 @@ class PushNotificationServiceByPush {
 
     // Handle notification taps
     Push.instance.onNotificationTap.listen((data) {
-      print('Notification was tapped:\nData: $data');
-      if (data == null) {
-        print("No data available in notification");
-      } else {
-        _handleNavigation(data);
-      }
-    });
+      debugPrint('Notification was tapped:\nData: $data');
+      _handleNavigation(data);
+        });
 
     // Handle push notifications received while app is in foreground
     Push.instance.addOnMessage((message) {
-      print('Notification received in foreground:\nData: ${message.data}');
+      debugPrint('Notification received in foreground:\nData: ${message.data}');
       if (message.notification != null) {
         final Map<String, dynamic> body =
             json.decode(message.data!['body'] as String);
@@ -59,10 +55,10 @@ class PushNotificationServiceByPush {
 
     // Handle background notifications
     Push.instance.addOnBackgroundMessage((message) {
-      print('Notification received in background:\nData: ${message.data}');
+      debugPrint('Notification received in background:\nData: ${message.data}');
       if (message.notification != null) {
         final Map<String, dynamic> body =
-        json.decode(message.data!['body'] as String);
+            json.decode(message.data!['body'] as String);
         final String? title = message.data!['title'] as String?;
         final String? description = body['description'] as String?;
         showNotification(
@@ -76,9 +72,14 @@ class PushNotificationServiceByPush {
     // Initialize local notifications
     const AndroidInitializationSettings androidInitSettings =
         AndroidInitializationSettings('@mipmap/ic_launcher');
-    const InitializationSettings initSettings = InitializationSettings(
-      android: androidInitSettings,
+    const DarwinInitializationSettings initializationSettingsIOS =
+        DarwinInitializationSettings(
+      requestSoundPermission: true,
+      requestBadgePermission: true,
+      requestAlertPermission: true,
     );
+    const InitializationSettings initSettings = InitializationSettings(
+        android: androidInitSettings, iOS: initializationSettingsIOS);
     await _localNotificationsPlugin.initialize(initSettings);
   }
 
@@ -94,10 +95,15 @@ class PushNotificationServiceByPush {
       importance: Importance.max,
       priority: Priority.high,
       color: primaryColor,
-      icon: '@drawable/ic_notification',
+      icon: '@mipmap/ic_launcher',
+    );
+    const DarwinNotificationDetails iosDetails = DarwinNotificationDetails(
+      presentAlert: true,
+      presentBadge: true,
+      presentSound: true,
     );
     const NotificationDetails platformDetails =
-        NotificationDetails(android: androidDetails);
+        NotificationDetails(android: androidDetails, iOS: iosDetails);
 
     _localNotificationsPlugin.show(
       0, // Notification ID
@@ -109,7 +115,7 @@ class PushNotificationServiceByPush {
   }
 
   void _handleNavigation(Map<String?, dynamic> data) {
-    print("Handling navigation with data: $data");
+    debugPrint("Handling navigation with data: $data");
 
     if (data.containsKey('payload')) {
       Map<String, dynamic> payload = json.decode(data['payload']);
@@ -118,32 +124,26 @@ class PushNotificationServiceByPush {
         String? type = body['type']?.toString();
 
         if (type == '1') {
-          print("Navigating to Home Screen");
+          debugPrint("Navigating to Home Screen");
           navigationService.navigatePushNamedAndRemoveUntilTo(
               homeScreenRoute, null);
         } else if (type == '4') {
-          // print("Navigating to Order History Screen");
-          // Navigator.pushAndRemoveUntil(
-          //   navigationService.currentContext,
-          //   MaterialPageRoute(builder: (context) => const OrderHistoryPage()),
-          //   (Route<dynamic> route) => false,
-          // );
         } else if (type == '5') {
-          print("Navigating to Dashboard Screen");
+          debugPrint("Navigating to Dashboard Screen");
           Navigator.pushAndRemoveUntil(
             navigationService.currentContext,
             MaterialPageRoute(builder: (context) => const WalletPage()),
             (Route<dynamic> route) => false,
           );
         } else if (type == '6') {
-          print("Navigating to Promotions Screen");
+          debugPrint("Navigating to Promotions Screen");
           Navigator.pushAndRemoveUntil(
             navigationService.currentContext,
-            MaterialPageRoute(builder: (context) => const DashboardPage()),
+            MaterialPageRoute(builder: (context) => const BottomNavPage()),
             (Route<dynamic> route) => false,
           );
         } else {
-          print("Unhandled notification type");
+          debugPrint("Unhandled notification type");
         }
       }
     }
@@ -175,7 +175,7 @@ class PushNotificationServiceByPush {
 //     // Handle notification launching app from terminated state
 //     Push.instance.notificationTapWhichLaunchedAppFromTerminated.then((data) {
 //       if (data == null) {
-//         print("App was not launched by tapping a notification");
+//         debugPrint("App was not launched by tapping a notification");
 //       } else {
 //         _handleNavigation(data as RemoteMessage);
 //       }
@@ -183,10 +183,10 @@ class PushNotificationServiceByPush {
 //
 //     // Handle notification taps
 //     Push.instance.onNotificationTap.listen((data) {
-//       print('Notification was tapped:\n'
+//       debugPrint('Notification was tapped:\n'
 //           'Data: ${data} \n');
 //       if (data == null) {
-//         print("App was not launched by tapping a notification");
+//         debugPrint("App was not launched by tapping a notification");
 //       } else {
 //         _handleNavigation(data as RemoteMessage);
 //       }
@@ -194,13 +194,13 @@ class PushNotificationServiceByPush {
 //
 //     // Handle push notifications
 //     Push.instance.addOnMessage((message) {
-//       print('RemoteMessage received while app is in foreground:\n'
+//       debugPrint('RemoteMessage received while app is in foreground:\n'
 //           'RemoteMessage.Notification: ${message.notification} \n'
 //           ' title: ${message.notification?.title.toString()}\n'
 //           ' body: ${message.notification?.body.toString()}\n'
 //           'RemoteMessage.Data: ${message.data}');
 //
-//       print("firebase notification listening::=======> ${message.data}");
+//       debugPrint("firebase notification listening::=======> ${message.data}");
 //       if (message.notification != null) {
 //         showNotification(
 //           title: message.notification!.title,
@@ -212,7 +212,7 @@ class PushNotificationServiceByPush {
 //
 //     // Handle push notifications
 //     Push.instance.addOnBackgroundMessage((message) {
-//       print('RemoteMessage received while app is in background:\n'
+//       debugPrint('RemoteMessage received while app is in background:\n'
 //           'RemoteMessage.Notification: ${message.notification} \n'
 //           ' title: ${message.notification?.title.toString()}\n'
 //           ' body: ${message.notification?.body.toString()}\n'
@@ -254,39 +254,39 @@ class PushNotificationServiceByPush {
 //
 //   void _handleNavigation(RemoteMessage data) {
 //     if (data == null) return;
-//     print("Handling navigation for type: ${data.data}");
+//     debugPrint("Handling navigation for type: ${data.data}");
 //
 //     String? type = data.data.toString();
 //     dynamic encode = json.decode(type);
-//     print("json decode: ${encode}");
+//     debugPrint("json decode: ${encode}");
 //
 //     if (type == '1') {
-//       print("Navigating to Home Screen");
+//       debugPrint("Navigating to Home Screen");
 //       navigationService.navigatePushNamedAndRemoveUntilTo(
 //           homeScreenRoute, null);
 //     } else if (type == '4') {
-//       print("Navigating to Order History Screen");
+//       debugPrint("Navigating to Order History Screen");
 //       Navigator.pushAndRemoveUntil(
 //         navigationService.currentContext,
 //         MaterialPageRoute(builder: (context) => const OrderHistoryPage()),
 //         (Route<dynamic> route) => false,
 //       );
 //     } else if (type == '5') {
-//       print("Navigating to Dashboard Screen");
+//       debugPrint("Navigating to Dashboard Screen");
 //       Navigator.pushAndRemoveUntil(
 //         navigationService.currentContext,
 //         MaterialPageRoute(builder: (context) => const DashboardPage()),
 //         (Route<dynamic> route) => false,
 //       );
 //     } else if (type == '6') {
-//       print("Navigating to Promotions Screen");
+//       debugPrint("Navigating to Promotions Screen");
 //       Navigator.pushAndRemoveUntil(
 //         navigationService.currentContext,
 //         MaterialPageRoute(builder: (context) => const DashboardPage()),
 //         (Route<dynamic> route) => false,
 //       );
 //     } else {
-//       print("Unhandled notification type");
+//       debugPrint("Unhandled notification type");
 //     }
 //   }
 // }

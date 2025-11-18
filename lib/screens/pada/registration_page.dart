@@ -24,7 +24,6 @@ class _RegistrationPageState extends State<RegistrationPage> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   bool isFilled = false;
-  final Prog _prog = Prog();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -61,7 +60,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                               child: SvgPicture.asset(
                                   'assets/images/pada_logo.svg',
                                   fit: BoxFit.fill)),
-                          Text("PADA DELIVERY",
+                          Text("Pada Delivery",
                               textAlign: TextAlign.center,
                               style: GoogleFonts.inter(
                                   color: pureWhite,
@@ -242,7 +241,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                                       email: mailController.text,
                                     )
                                         .then((value) async {
-                                      print(value);
+                                      // debugPrint(value);
                                       LoadingOverlay.of(context).hide();
                                       if (value['success']) {
                                         await Navigator.pushAndRemoveUntil(

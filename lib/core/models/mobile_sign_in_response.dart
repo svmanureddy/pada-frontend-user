@@ -20,9 +20,9 @@ class MobileSignInResponse {
   });
 
   factory MobileSignInResponse.fromJson(Map<String, dynamic> json) => MobileSignInResponse(
-    success: json["success"],
-    message: json["message"],
-    data: json["data"] == null ? null : Data.fromJson(json["data"]),
+    success: json["success"] as bool?,
+    message: json["message"]?.toString(),
+    data: json["data"] == null ? null : Data.fromJson(json["data"] as Map<String, dynamic>),
   );
 
   Map<String, dynamic> toJson() => {
@@ -40,9 +40,9 @@ class Data {
   Data({this.accessToken, this.refreshToken, this.user});
 
   Data.fromJson(Map<String, dynamic> json) {
-    accessToken = json['accessToken'];
-    refreshToken = json['refreshToken'];
-    user = json['user'] != null ? User.fromJson(json['user']) : null;
+    accessToken = json['accessToken']?.toString();
+    refreshToken = json['refreshToken']?.toString();
+    user = json['user'] != null ? User.fromJson(json['user'] as Map<String, dynamic>) : null;
   }
 
   Map<String, dynamic> toJson() {
@@ -97,24 +97,24 @@ class User {
         this.id});
 
   User.fromJson(Map<String, dynamic> json) {
-    sId = json['_id'];
-    firstName = json['firstName'];
-    lastName = json['lastName'];
-    phoneNumber = json['phoneNumber'];
-    socialId = json['socialId'];
-    email = json['email'];
-    wallet = json['wallet'];
-    image = json['image'];
-    deviceToken = json['deviceToken'];
-    shortCode = json['shortCode'];
-    userType = json['userType'];
-    active = json['active'];
-    isVerified = json['isVerified'];
-    registeredWith = json['registeredWith'];
-    createdAt = json['createdAt'];
-    updatedAt = json['updatedAt'];
-    iV = json['__v'];
-    id = json['id'];
+    sId = json['_id']?.toString();
+    firstName = json['firstName']?.toString();
+    lastName = json['lastName']?.toString();
+    phoneNumber = json['phoneNumber']?.toString();
+    socialId = json['socialId']?.toString();
+    email = json['email']?.toString();
+    wallet = json['wallet'] is int ? json['wallet'] as int? : (json['wallet'] is num ? (json['wallet'] as num).toInt() : null);
+    image = json['image']?.toString();
+    deviceToken = json['deviceToken']?.toString();
+    shortCode = json['shortCode']?.toString();
+    userType = json['userType'] is int ? json['userType'] as int? : (json['userType'] is num ? (json['userType'] as num).toInt() : null);
+    active = json['active'] as bool?;
+    isVerified = json['isVerified'] as bool?;
+    registeredWith = json['registeredWith']?.toString();
+    createdAt = json['createdAt']?.toString();
+    updatedAt = json['updatedAt']?.toString();
+    iV = json['__v'] is int ? json['__v'] as int? : (json['__v'] is num ? (json['__v'] as num).toInt() : null);
+    id = json['id']?.toString();
   }
 
   Map<String, dynamic> toJson() {

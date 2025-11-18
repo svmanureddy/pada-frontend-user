@@ -1,0 +1,31 @@
+Release Notes for Version 1.6.1
+
+What's new in version 1.6.1:
+
+🎨 Complete App Remodeling & Redesign
+• Fresh new look with modern, intuitive interface
+• Redesigned navigation for smoother user experience
+• Enhanced visual elements and improved app aesthetics
+• Streamlined user flows for better accessibility
+
+⚡ Performance Optimization
+• Significantly improved app speed and responsiveness
+• Optimized memory usage for better device performance
+• Faster loading times across all features
+• Enhanced location services and map rendering
+
+🔧 Technical Improvements
+• Optimized app architecture for better stability
+• Improved error handling and recovery
+• Enhanced security and data protection
+• Better compatibility with latest Android devices
+
+✨ User Experience Enhancements
+• Smoother animations and transitions
+• Improved notification system
+• Better offline functionality
+• Enhanced overall app reliability
+
+We've completely remodeled and optimized Pada Delivery to provide you with the best delivery experience. Thank you for being with us!
+
+

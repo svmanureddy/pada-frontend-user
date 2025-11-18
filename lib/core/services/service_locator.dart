@@ -2,7 +2,6 @@ import 'package:get_it/get_it.dart';
 import 'package:deliverapp/core/services/storage_service.dart';
 
 import 'api_service.dart';
-import 'connectivity_service.dart';
 import 'location_services.dart';
 import 'navigation_service.dart';
 import 'notification_service.dart';

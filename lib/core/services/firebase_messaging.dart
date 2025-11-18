@@ -43,7 +43,7 @@
 //
 //     // Handle foreground notifications
 //     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-//       print("firebase notification listening::=======> ${message.data}");
+//       debugPrint("firebase notification listening::=======> ${message.data}");
 //       if (message.notification != null) {
 //         showNotification(
 //           title: message.notification!.title,
@@ -55,16 +55,16 @@
 //
 //     // Handle background notification taps
 //     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-//       print("Notification data: ${message.data}");
+//       debugPrint("Notification data: ${message.data}");
 //       handleNotificationTap(message.data);
 //     });
 //
 //     // push.Push.instance.notificationTapWhichLaunchedAppFromTerminated
 //     //     .then((data) {
 //     //   if (data == null) {
-//     //     print("App was not launched by tapping a notification");
+//     //     debugPrint("App was not launched by tapping a notification");
 //     //   } else {
-//     //     print('Notification tap launched app from terminated state:\n'
+//     //     debugPrint('Notification tap launched app from terminated state:\n'
 //     //         'Data: $data \n');
 //     //   }
 //     //   // notificationWhichLaunchedApp.value = data;
@@ -73,15 +73,15 @@
 //     // // Handle notification taps
 //     // final onNotificationTapSubscription =
 //     // push.Push.instance.onNotificationTap.listen((data) {
-//     //   print('Notification was tapped:\n'
+//     //   debugPrint('Notification was tapped:\n'
 //     //       'Data: $data \n');
 //     //   // RemoteMessage message = data
 //     //
-//     //   // print("Notification data: $data");
+//     //   // debugPrint("Notification data: $data");
 //     //   // int type = data.keys.['payload']['body']['type'];
-//     //   // print("data id 2: ---------- $type");
+//     //   // debugPrint("data id 2: ---------- $type");
 //     //   // if (type == 1) {
-//     //   //   print("push notification::=>.............. Account created");
+//     //   //   debugPrint("push notification::=>.............. Account created");
 //     //
 //     //   // navigationService.navigatePushNamedAndRemoveUntilTo(
 //     //   //     homeScreenRoute, null);
@@ -92,28 +92,28 @@
 //     //         (Route<dynamic> route) => false,
 //     //   );
 //     //   // } else if (type == 4) {
-//     //   //   print("push notification::=>.............. order status");
+//     //   //   debugPrint("push notification::=>.............. order status");
 //     //   //   Navigator.pushAndRemoveUntil(
 //     //   //     navigationService.currentContext,
 //     //   //     MaterialPageRoute(builder: (context) => const OrderHistoryPage()),
 //     //   //         (Route<dynamic> route) => false,
 //     //   //   );
 //     //   // } else if (type == 5) {
-//     //   //   print("push notification::=>.............. payment completed");
+//     //   //   debugPrint("push notification::=>.............. payment completed");
 //     //   //   Navigator.pushAndRemoveUntil(
 //     //   //     navigationService.currentContext,
 //     //   //     MaterialPageRoute(builder: (context) => const DashboardPage()),
 //     //   //         (Route<dynamic> route) => false,
 //     //   //   );
 //     //   // } else if (type == 6) {
-//     //   //   print("push notification::=>.............. promotion notify");
+//     //   //   debugPrint("push notification::=>.............. promotion notify");
 //     //   //   Navigator.pushAndRemoveUntil(
 //     //   //     navigationService.currentContext,
 //     //   //     MaterialPageRoute(builder: (context) => const DashboardPage()),
 //     //   //         (Route<dynamic> route) => false,
 //     //   //   );
 //     //   // } else {
-//     //   //   print("push notification::=>.............. notification added");
+//     //   //   debugPrint("push notification::=>.............. notification added");
 //     //   // }
 //     //   // tappedNotificationPayloads.value += [data];
 //     // });
@@ -160,11 +160,11 @@
 //
 //    void handleNotificationTap(Map<String, dynamic> data) {
 //     // Navigate or perform actions based on data
-//     print("Notification data: $data");
+//     debugPrint("Notification data: $data");
 //     int type = data['body']['type'];
-//     print("data id 2: ---------- $type");
+//     debugPrint("data id 2: ---------- $type");
 //     if (type == 1) {
-//       print("push notification::=>.............. Account created");
+//       debugPrint("push notification::=>.............. Account created");
 //
 //       // navigationService.navigatePushNamedAndRemoveUntilTo(
 //       //     homeScreenRoute, null);
@@ -175,28 +175,28 @@
 //             (Route<dynamic> route) => false,
 //       );
 //     } else if (type == 4) {
-//       print("push notification::=>.............. order status");
+//       debugPrint("push notification::=>.............. order status");
 //       Navigator.pushAndRemoveUntil(
 //         navigationService.currentContext,
 //         MaterialPageRoute(builder: (context) => const OrderHistoryPage()),
 //             (Route<dynamic> route) => false,
 //       );
 //     } else if (type == 5) {
-//       print("push notification::=>.............. payment completed");
+//       debugPrint("push notification::=>.............. payment completed");
 //       Navigator.pushAndRemoveUntil(
 //         navigationService.currentContext,
 //         MaterialPageRoute(builder: (context) => const DashboardPage()),
 //             (Route<dynamic> route) => false,
 //       );
 //     } else if (type == 6) {
-//       print("push notification::=>.............. promotion notify");
+//       debugPrint("push notification::=>.............. promotion notify");
 //       Navigator.pushAndRemoveUntil(
 //         navigationService.currentContext,
 //         MaterialPageRoute(builder: (context) => const DashboardPage()),
 //             (Route<dynamic> route) => false,
 //       );
 //     } else {
-//       print("push notification::=>.............. notification added");
+//       debugPrint("push notification::=>.............. notification added");
 //     }
 //   }
 // }
@@ -208,18 +208,18 @@
 //     await registerNotificationListeners();
 //     FirebaseMessaging.instance.getInitialMessage().then((RemoteMessage? message) {
 //       if (message != null) {
-//         print("setupNotificationHandler function ");
-//         print("App launched from notification: ${message.data}");
+//         debugPrint("setupNotificationHandler function ");
+//         debugPrint("App launched from notification: ${message.data}");
 //       }
 //     });
 //     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
 //
-//       print("message opened: ---------- $message");
+//       debugPrint("message opened: ---------- $message");
 //       var data = message.data;
 //       int type = data['body']['type'];
-//       print("data id 2: ---------- $type");
+//       debugPrint("data id 2: ---------- $type");
 //       if (type == 1) {
-//         print("push notification::=>.............. Account created");
+//         debugPrint("push notification::=>.............. Account created");
 //
 //         // navigationService.navigatePushNamedAndRemoveUntilTo(
 //         //     homeScreenRoute, null);
@@ -230,28 +230,28 @@
 //               (Route<dynamic> route) => false,
 //         );
 //       } else if (type == 4) {
-//         print("push notification::=>.............. order status");
+//         debugPrint("push notification::=>.............. order status");
 //         Navigator.pushAndRemoveUntil(
 //           navigationService.currentContext,
 //           MaterialPageRoute(builder: (context) => const OrderHistoryPage()),
 //               (Route<dynamic> route) => false,
 //         );
 //       } else if (type == 5) {
-//         print("push notification::=>.............. payment completed");
+//         debugPrint("push notification::=>.............. payment completed");
 //         Navigator.pushAndRemoveUntil(
 //           navigationService.currentContext,
 //           MaterialPageRoute(builder: (context) => const DashboardPage()),
 //               (Route<dynamic> route) => false,
 //         );
 //       } else if (type == 6) {
-//         print("push notification::=>.............. promotion notify");
+//         debugPrint("push notification::=>.............. promotion notify");
 //         Navigator.pushAndRemoveUntil(
 //           navigationService.currentContext,
 //           MaterialPageRoute(builder: (context) => const DashboardPage()),
 //               (Route<dynamic> route) => false,
 //         );
 //       } else {
-//         print("push notification::=>.............. notification added");
+//         debugPrint("push notification::=>.............. notification added");
 //       }
 //     });
 //   }
@@ -292,8 +292,8 @@
 // // If `onMessage` is triggered with a notification, construct our own
 //       // local notification to show to users using the created channel.
 //       if (notification != null && android != null) {
-//         print(".........///////..... ${android.sound}");
-//         print("data id 1: ---------- ${message.data}");
+//         debugPrint(".........///////..... ${android.sound}");
+//         debugPrint("data id 1: ---------- ${message.data}");
 //         // Get.toNamed(ROUTE_BOOK_INTRO,
 //         //         arguments: message.data['id'])
 //         flutterLocalNotificationsPlugin.show(
@@ -325,12 +325,12 @@
 //       );
 //
 //       if (settings.authorizationStatus == AuthorizationStatus.authorized) {
-//         print('User granted permission');
+//         debugPrint('User granted permission');
 //       } else if (settings.authorizationStatus ==
 //           AuthorizationStatus.provisional) {
-//         print('User granted provisional permission');
+//         debugPrint('User granted provisional permission');
 //       } else {
-//         print('User declined or has not accepted permission');
+//         debugPrint('User declined or has not accepted permission');
 //       }
 //       await FirebaseMessaging.instance
 //           .setForegroundNotificationPresentationOptions(
@@ -339,9 +339,9 @@
 //         sound: true,
 //       );
 //       // FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
-//       print("Foreground notification settings applied successfully.");
+//       debugPrint("Foreground notification settings applied successfully.");
 //     } catch (e) {
-//       print("Error setting foreground notification options: $e");
+//       debugPrint("Error setting foreground notification options: $e");
 //     }
 //   }
 //

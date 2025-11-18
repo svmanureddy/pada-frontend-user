@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-const primaryColor = Color(0xFFFFC700);
-const buttonColor = Color(0xFFFF8A00);
+const primaryColor = Color(0xFF0057E7);
+const buttonColor = Color(0xFF2A7BFF);
 const secondaryColor = Color(0xFF0058BF);
 const addressTextColor = Color(0xFF747474);
 const cancelStatusColor = Color(0xFF9E0000);

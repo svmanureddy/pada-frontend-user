@@ -2,14 +2,13 @@ import 'dart:convert';
 
 import 'package:deliverapp/routers/router.dart';
 import 'package:deliverapp/routers/routing_constants.dart';
-import 'package:deliverapp/screens/pada/dashboard_page.dart';
+import 'package:deliverapp/screens/pada/bottom_navigation_page.dart';
 import 'package:deliverapp/screens/pada/wallet_page.dart';
 import 'package:deliverapp/screens/splash_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:provider/provider.dart';
 import 'package:push/push.dart' as push;
 import 'core/colors.dart';
@@ -27,18 +26,27 @@ final GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey =
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   // If you're going to use other Firebase services in the background, such as Firestore,
   // make sure you call `initializeApp()'
-  print("Handling a background message: ${message.messageId}");
+  debugPrint("Handling a background message: ${message.messageId}");
 }
 
 void main() async {
-  WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
-
-  FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
-  // WidgetsFlutterBinding.ensureInitialized();
+  WidgetsFlutterBinding.ensureInitialized();
+  
   SystemChrome.setPreferredOrientations(
       [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
+  // Set system UI overlay style to match app theme
+  SystemChrome.setSystemUIOverlayStyle(
+    const SystemUiOverlayStyle(
+      statusBarColor: Colors.transparent,
+      statusBarIconBrightness: Brightness.light,
+      systemNavigationBarColor: primaryColor,
+      systemNavigationBarIconBrightness: Brightness.light,
+    ),
+  );
   setupLocator();
   await storageService.initHiveInApp();
+  await SecureStorageUtil.saveValue("xApiKey", "5Qds8mNwQ6LFxILfN0RZVPXS3LONTSMQt48YNecuEOf8tgWmhgjPiFT91Vn3ys6nQIXEvNVdX8ho9E71vOXieutTHOvaFSuRAx1z");
+  await SecureStorageUtil.saveValue("mapApiKey", "AIzaSyD3qNO8dnfJc6sxGR68q6dDkUPe7V1x_Hs");
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   await PushNotificationServiceByPush().setupInteractedMessage();
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
@@ -46,22 +54,21 @@ void main() async {
   // Handle notification launching app from terminated state
   push.Push.instance.notificationTapWhichLaunchedAppFromTerminated.then((data) {
     if (data == null) {
-      print("App was not launched by tapping a notification");
+      debugPrint("App was not launched by tapping a notification");
     } else {
-      print("App was launched by tapping a notification");
+      debugPrint("App was launched by tapping a notification");
       _handleNavigation(data);
     }
   });
 
   WidgetsBinding.instance.addPostFrameCallback((_) {});
-  await Future.delayed(const Duration(seconds: 2));
+  await Future.delayed(const Duration(seconds: 1));
   _checkFirstLaunch();
-  runApp(App());
-  FlutterNativeSplash.remove();
+  runApp(const App());
 }
 
 void _handleNavigation(Map<String?, dynamic> data) {
-  print("Handling navigation with data: $data");
+  debugPrint("Handling navigation with data: $data");
 
   if (data.containsKey('payload')) {
     Map<String, dynamic> payload = json.decode(data['payload']);
@@ -70,32 +77,32 @@ void _handleNavigation(Map<String?, dynamic> data) {
       String? type = body['type']?.toString();
 
       if (type == '1') {
-        print("Navigating to Home Screen");
+        debugPrint("Navigating to Home Screen");
         navigationService.navigatePushNamedAndRemoveUntilTo(
             homeScreenRoute, null);
       } else if (type == '4') {
-        // print("Navigating to Order History Screen");
+        // debugPrint("Navigating to Order History Screen");
         // Navigator.pushAndRemoveUntil(
         //   navigationService.currentContext,
         //   MaterialPageRoute(builder: (context) => const OrderHistoryPage()),
         //   (Route<dynamic> route) => false,
         // );
       } else if (type == '5') {
-        print("Navigating to Dashboard Screen");
+        debugPrint("Navigating to Dashboard Screen");
         Navigator.pushAndRemoveUntil(
           navigationService.currentContext,
           MaterialPageRoute(builder: (context) => const WalletPage()),
           (Route<dynamic> route) => false,
         );
       } else if (type == '6') {
-        print("Navigating to Promotions Screen");
+        debugPrint("Navigating to Promotions Screen");
         Navigator.pushAndRemoveUntil(
           navigationService.currentContext,
-          MaterialPageRoute(builder: (context) => const DashboardPage()),
+          MaterialPageRoute(builder: (context) => const BottomNavPage()),
           (Route<dynamic> route) => false,
         );
       } else {
-        print("Unhandled notification type");
+        debugPrint("Unhandled notification type");
       }
     }
   }
@@ -122,7 +129,7 @@ Future<void> _checkFirstLaunch() async {
 }
 
 class App extends StatefulWidget {
-  App({super.key}); // Make it final to ensure it's properly assigned
+  const App({super.key}); // Make it final to ensure it's properly assigned
 
   @override
   AppState createState() => AppState();
@@ -149,7 +156,7 @@ class AppState extends State<App> {
                 ],
               ));
         },
-        title: "PADA DELIVERY",
+        title: "Pada Delivery",
         theme: ThemeData(
             useMaterial3: false,
             primaryColor: primaryColor,
@@ -157,7 +164,7 @@ class AppState extends State<App> {
             fontFamily: 'openSans',
             colorScheme: ColorScheme.fromSwatch(primarySwatch: Colors.blue)
                 .copyWith(secondary: accentColor)
-                .copyWith(background: backgroundColor)),
+                .copyWith(surface: backgroundColor)),
         debugShowCheckedModeBanner: false,
         navigatorKey: navigationService.navigatorKey,
         onGenerateRoute: generateRoute,

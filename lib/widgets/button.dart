@@ -44,7 +44,7 @@ class _CustomButtonState extends State<CustomButton> {
                 color: widget.textColor ?? pureWhite,
                 fontSize: widget.buttonTextSize,
                 fontWeight: widget.fontWeight ?? FontWeight.w600)),
-        onPressed: widget.onTap,
+        onPressed: widget.loading ? null : widget.onTap,
         child: Center(
           child: widget.loading
               ? const SizedBox(

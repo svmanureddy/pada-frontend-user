@@ -17,7 +17,7 @@ class AppProvider extends ChangeNotifier {
   ReqAcceptModel? acceptedData;
   late IO.Socket? socketIO;
   setPickupAddress(AddressModel source) {
-    print("dest string::: $source");
+    debugPrint("dest string::: $source");
     pickupAddress = source;
     notifyListeners();
   }
@@ -26,7 +26,7 @@ class AppProvider extends ChangeNotifier {
   double longitude = 0.0;
 
   setLatLong({required double lat, required double lng}) {
-    print("set latlng::: $lat, $lng");
+    debugPrint("set latlng::: $lat, $lng");
     latitude = lat;
     longitude = lng;
     notifyListeners();
@@ -39,13 +39,13 @@ class AppProvider extends ChangeNotifier {
   }
 
   setDropAddress(AddressModel destination) {
-    print("dest string::: $destination");
+    debugPrint("dest string::: $destination");
     dropAddress = destination;
     notifyListeners();
   }
 
   setAcceptedData(ReqAcceptModel data) {
-    print("ReqAcceptModel string::: $data");
+    debugPrint("ReqAcceptModel string::: $data");
     acceptedData = data;
     notifyListeners();
   }
@@ -61,22 +61,22 @@ class AppProvider extends ChangeNotifier {
   //         'autoConnect': false
   //       }).setTransports(['websocket']).build());
   //   socket.onError((data) {
-  //     print("socket error in connect===================//==//== $data");
+  //     debugPrint("socket error in connect===================//==//== $data");
   //   });
   //   return socket;
   // }
   Future socketConnect() async {
     String? token = await storageService.getAuthToken();
     socketIO = IO.io(
-        'http://13.233.100.215:7000',
+        '$ip:7000',
         OptionBuilder().setExtraHeaders({
           'x-api-key': xApiKey,
           'Authorization': "Bearer ${token!}",
           'autoConnect': false
         }).setTransports(['websocket']).build());
-    print('<=========== SOCKET CONNECTED: ${socketIO!.id}===========>');
+    debugPrint('<=========== SOCKET CONNECTED: ${socketIO!.id}===========>');
     socketIO!.onError((data) {
-      print("socketIO error in connect===================//==//== $data");
+      debugPrint("socketIO error in connect===================//==//== $data");
     });
     notifyListeners();
   }
@@ -85,7 +85,7 @@ class AppProvider extends ChangeNotifier {
       IO.Socket socket, String event, dynamic data, dynamic appProvider) async {
     socket.onConnect((_) {
       if (kDebugMode) {
-        print('<=========== SOCKET CONNECTED: ${socket.id}===========>');
+        debugPrint('<=========== SOCKET CONNECTED: ${socket.id}===========>');
       }
       socket.emit(event, data);
     });
@@ -94,7 +94,7 @@ class AppProvider extends ChangeNotifier {
   // Future<Stream> socketListen(IO.Socket socket, String event, dynamic appProvider) async {
   //   socket.onConnect((_) {
   //     // if (kDebugMode) {
-  //       print('<=========== SOCKET LISTENING: ${socket.id}===========>');
+  //       debugPrint('<=========== SOCKET LISTENING: ${socket.id}===========>');
   //     // }
   //   return  socket.on(event, (data) {
   //       return data;
@@ -106,7 +106,7 @@ class AppProvider extends ChangeNotifier {
       IO.Socket socket, String event, dynamic appProvider) async {
     socket.onDisconnect((_) {
       if (kDebugMode) {
-        print('<=========== SOCKET DISCONNECTED ===========>');
+        debugPrint('<=========== SOCKET DISCONNECTED ===========>');
       }
     });
   }

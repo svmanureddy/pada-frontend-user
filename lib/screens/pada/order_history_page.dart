@@ -3,7 +3,6 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:deliverapp/core/services/notification_service.dart';
 import '../../core/colors.dart';
 import '../../core/models/history_model.dart';
-import '../../core/models/vehicle_list_model.dart';
 import '../../core/services/api_service.dart';
 import '../../widgets/order_history_card_widget.dart';
 
@@ -90,13 +89,25 @@ class _OrderHistoryPageState extends State<OrderHistoryPage> {
   /// Builds loading indicator for pagination
   Widget _buildProgressIndicator() {
     return Padding(
-      padding: const EdgeInsets.all(8.0),
+      padding: const EdgeInsets.all(16.0),
       child: Center(
         child: isLoading
-            ? const CircularProgressIndicator()
+            ? const CircularProgressIndicator(
+                color: secondaryColor,
+              )
             : hasMoreData
                 ? const SizedBox()
-                : const Text("No more orders"),
+                : Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 24.0),
+                    child: Text(
+                      "No more orders",
+                      style: GoogleFonts.inter(
+                        color: greyText,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w400,
+                      ),
+                    ),
+                  ),
       ),
     );
   }
@@ -105,78 +116,108 @@ class _OrderHistoryPageState extends State<OrderHistoryPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: true,
-      backgroundColor: Colors.grey[200], // Example: lightWhiteColor
+      backgroundColor: pureWhite,
       body: success
-          ? SafeArea(
-              child: Stack(
-                children: [
-                  Container(
-                    height: MediaQuery.of(context).size.height * 0.45,
-                    width: MediaQuery.of(context).size.width,
-                    decoration: const BoxDecoration(color: primaryColor),
+          ? Column(
+              children: [
+                // Header Section
+                Container(
+                  width: MediaQuery.of(context).size.width,
+                  padding: const EdgeInsets.only(top: 20, bottom: 16),
+                  decoration: const BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [primaryColor, primaryColor],
+                      stops: [0.0, 1.0],
+                    ),
                   ),
-                  Positioned(
+                  child: SafeArea(
+                    bottom: false,
                     child: Center(
-                      child: SizedBox(
-                        height: MediaQuery.of(context).size.height * 0.8,
-                        width: MediaQuery.of(context).size.width * 0.95,
-                        child: Card(
-                          color: Colors.white,
-                          child: Column(
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.all(15.0),
-                                child: Text(
-                                  "Orders",
-                                  style: GoogleFonts.inter(
-                                    color: Colors.black, // Example: pureBlack
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.w400,
-                                  ),
-                                ),
-                              ),
-                              Expanded(
-                                child: historyList == null ||
-                                        historyList!.data!.isEmpty
-                                    ? const Center(
-                                        child: Text(
-                                          "No Orders",
-                                          style: TextStyle(
-                                            color: Colors.black,
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                      )
-                                    : ListView.builder(
-                                        controller: _scrollController,
-                                        itemCount: historyList!.data!.length +
-                                            1, // Extra item for loader
-                                        padding: EdgeInsets.zero,
-                                        itemBuilder:
-                                            (BuildContext context, int index) {
-                                          if (index ==
-                                              historyList!.data!.length) {
-                                            return _buildProgressIndicator();
-                                          }
-
-                                          return ConnectHistoryListCardWidget(
-                                              historyList:
-                                                  historyList!.data![index]);
-                                        },
-                                      ),
-                              ),
-                            ],
-                          ),
+                      child: Text(
+                        "Orders",
+                        style: GoogleFonts.inter(
+                          color: pureWhite,
+                          fontSize: 24,
+                          fontWeight: FontWeight.w700,
                         ),
                       ),
                     ),
                   ),
-                ],
-              ),
+                ),
+                // Content Section
+                Expanded(
+                  child: historyList == null || historyList!.data!.isEmpty
+                      ? Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.receipt_long_outlined,
+                                size: 64,
+                                color: greyText,
+                              ),
+                              const SizedBox(height: 16),
+                              Text(
+                                "No Orders",
+                                style: GoogleFonts.inter(
+                                  color: pureBlack,
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                "You don't have any orders yet",
+                                style: GoogleFonts.inter(
+                                  color: greyText,
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w400,
+                                ),
+                              ),
+                            ],
+                          ),
+                        )
+                      : ListView.builder(
+                          controller: _scrollController,
+                          itemCount: historyList!.data!.length + 1,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16.0,
+                            vertical: 16.0,
+                          ),
+                          itemBuilder: (BuildContext context, int index) {
+                            if (index == historyList!.data!.length) {
+                              return _buildProgressIndicator();
+                            }
+
+                            return TweenAnimationBuilder<double>(
+                              duration:
+                                  Duration(milliseconds: 300 + (index * 50)),
+                              tween: Tween(begin: 0.0, end: 1.0),
+                              curve: Curves.easeOut,
+                              builder: (context, value, child) {
+                                return Transform.translate(
+                                  offset: Offset(0, 20 * (1 - value)),
+                                  child: Opacity(
+                                    opacity: value,
+                                    child: child,
+                                  ),
+                                );
+                              },
+                              child: ConnectHistoryListCardWidget(
+                                historyList: historyList!.data![index],
+                              ),
+                            );
+                          },
+                        ),
+                ),
+              ],
             )
-          : const Center(
-              child: CircularProgressIndicator(),
+          : Center(
+              child: CircularProgressIndicator(
+                color: secondaryColor,
+              ),
             ),
     );
   }

@@ -6,7 +6,7 @@
 // ignore_for_file: lines_longer_than_80_chars, avoid_classes_with_only_static_members
 import 'package:firebase_core/firebase_core.dart' show FirebaseOptions;
 import 'package:flutter/foundation.dart'
-    show defaultTargetPlatform, kIsWeb, TargetPlatform;
+    show defaultTargetPlatform, TargetPlatform;
 
 /// Default [FirebaseOptions] for use with your Firebase apps.
 ///
@@ -28,12 +28,12 @@ class DefaultFirebaseOptions {
       case TargetPlatform.windows:
         throw UnsupportedError(
           'DefaultFirebaseOptions have not been configured for windows - '
-              'you can reconfigure this by running the FlutterFire CLI again.',
+          'you can reconfigure this by running the FlutterFire CLI again.',
         );
       case TargetPlatform.linux:
         throw UnsupportedError(
           'DefaultFirebaseOptions have not been configured for linux - '
-              'you can reconfigure this by running the FlutterFire CLI again.',
+          'you can reconfigure this by running the FlutterFire CLI again.',
         );
       default:
         throw UnsupportedError(
@@ -42,27 +42,23 @@ class DefaultFirebaseOptions {
     }
   }
 
-
-
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyCSr5RtlBZ4mSkZUmvnSfEQbCNLUuc8zns',
     appId: '1:604928870549:android:3517964cc01563a7af739c',
     messagingSenderId: '604928870549',
     projectId: 'padadeliveryapp',
-
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyCSr5RtlBZ4mSkZUmvnSfEQbCNLUuc8zns',
+    apiKey: 'AIzaSyB75a4Gh9NqrFMKngNf19ouiuNzdMd-5DQ',//'AIzaSyCSr5RtlBZ4mSkZUmvnSfEQbCNLUuc8zns',
     appId: '1:604928870549:ios:a0fa84b28cddf893af739c',
     messagingSenderId: '604928870549',
     projectId: 'padadeliveryapp',
     androidClientId:
-    '604928870549-ea0te47k4ivm7i9lfftamofr9h12re24.apps.googleusercontent.com',
+        '604928870549-ea0te47k4ivm7i9lfftamofr9h12re24.apps.googleusercontent.com',
     iosClientId:
-    '604928870549-r2fglbbialqvsfv50tfvf10vat7bedq5.apps.googleusercontent.com',
+        '604928870549-r2fglbbialqvsfv50tfvf10vat7bedq5.apps.googleusercontent.com',
     // '406099696497-irb7edfevfkhi6t5s9kbuq1mt1og95rg.apps.googleusercontent.com',
     iosBundleId: 'com.pada.deliverapp',
   );
-
 }

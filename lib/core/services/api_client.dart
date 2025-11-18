@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:deliverapp/core/services/service_locator.dart';
 import 'package:deliverapp/core/services/storage_service.dart';
+import 'package:flutter/material.dart';
 
 import '../../routers/routing_constants.dart';
 import '../constants.dart';
@@ -35,7 +36,7 @@ class BaseClient {
 
   setToken(String token) {
     _authToken = "Bearer $token";
-    print("auth success:: $_authToken");
+    debugPrint("auth success:: $_authToken");
   }
 
   Future<Map<String, dynamic>> getHeaders2(
@@ -44,7 +45,9 @@ class BaseClient {
     String? token = await storageService.getAuthToken();
     Map<String, dynamic> headers = dio.options.headers;
     try {
-      headers['Authorization'] = 'Bearer $token';
+      if (isAuthenticated && token != null && token.isNotEmpty) {
+        headers['Authorization'] = 'Bearer $token';
+      }
       if (headersIncoming != null) {
         headers.addAll(headersIncoming);
       }
@@ -58,7 +61,9 @@ class BaseClient {
     String? token = await storageService.getRefreshToken();
     Map<String, dynamic> headers = dio.options.headers;
     try {
-      headers['Authorization'] = 'Bearer $token';
+      if (token != null && token.isNotEmpty) {
+        headers['Authorization'] = 'Bearer $token';
+      }
       return headers;
     } catch (e) {
       return headers;
@@ -71,7 +76,7 @@ class BaseClient {
     Map<String, dynamic> headers = dio.options.headers;
 
     try {
-      print("auth::$_authToken");
+      debugPrint("auth::$_authToken");
       if (isAuthenticated && _authToken != '') {
         headers['Authorization'] = _authToken;
       }
@@ -90,14 +95,14 @@ class BaseClient {
       bool isAuthenticated = true,
       Map<String, dynamic>? headers}) async {
     try {
-      print("URL: $url");
+      debugPrint("URL: $url");
       var response = await dio.get(url,
           options: Options(
               headers: await getHeaders2(
                   isAuthenticated: isAuthenticated, headersIncoming: headers)));
       return _processResponse(response);
     } on DioException catch (dioError) {
-      print("DioError: ${dioError.message}");
+      debugPrint("DioError: ${dioError.message}");
       throw _dioException(dioError);
     } catch (e) {
       rethrow;
@@ -109,12 +114,12 @@ class BaseClient {
       bool isAuthenticated = true,
       Map<String, dynamic>? headers}) async {
     try {
-      print("URL: $baseUrl$url");
+      debugPrint("URL: $baseUrl$url");
       var response = await dio.get(url,
           options: Options(headers: await getHeadersForRefresh()));
       return _processResponse(response);
     } on DioException catch (dioError) {
-      print("DioError: ${dioError.response}");
+      debugPrint("DioError: ${dioError.response}");
       throw _dioException(dioError);
     } catch (e) {
       rethrow;
@@ -128,14 +133,15 @@ class BaseClient {
       bool isAuthenticated = true,
       Map<String, dynamic>? headers}) async {
     try {
-      print("URL: $baseUrl$url");
-      print("PAYLOAD: $payload");
-      print("TOKEN: $_authToken");
-      // print("HEADERS: ${await getHeaders2()}");
+      debugPrint("URL: $baseUrl$url");
+      debugPrint("PAYLOAD: $payload");
+      String? token = await storageService.getAuthToken();
+      debugPrint("TOKEN: $token");
+      debugPrint("auth:: Bearer $token");
       var response = await dio.post(url,
           data: payload ?? {},
           options: Options(
-              headers: getHeaders(
+              headers: await getHeaders2(
                   isAuthenticated: isAuthenticated, headersIncoming: headers)));
       // if (response.statusCode == 401) {
       //   navigationService.navigatePushNamedAndRemoveUntilTo(
@@ -143,10 +149,10 @@ class BaseClient {
       // }
       return _processResponse(response);
     } on DioException catch (dioError) {
-      print("DioError: ${dioError.response}");
+      debugPrint("DioError: ${dioError.response}");
       throw _dioException(dioError);
     } catch (e) {
-      print("Error: $e");
+      debugPrint("Error: $e");
       rethrow;
     }
   }
@@ -158,10 +164,10 @@ class BaseClient {
       bool isAuthenticated = true,
       Map<String, dynamic>? headers}) async {
     try {
-      print("URL: $baseUrl$url");
-      print("PAYLOAD: $payload");
-      print("TOKEN: $_authToken");
-      // print("HEADERS: ${await getHeaders2()}");
+      debugPrint("URL: $baseUrl$url");
+      debugPrint("PAYLOAD: $payload");
+      debugPrint("TOKEN: $_authToken");
+      // debugPrint("HEADERS: ${await getHeaders2()}");
       var response = await dio.post(url,
           data: payload ?? {},
           options: Options(
@@ -171,11 +177,13 @@ class BaseClient {
       //   navigationService.navigatePushNamedAndRemoveUntilTo(
       //       loginScreenRoute, null);
       // }
-      print("]]]]]]]]]] $response");
       return _processResponse(response);
+    } on DioException catch (dioError) {
+      debugPrint("DioError: ${dioError.response}");
+      throw _dioException(dioError);
     } catch (e) {
-      print("Error: $e");
-      // throw e;
+      debugPrint("Error: $e");
+      rethrow;
     }
   }
 
@@ -186,10 +194,10 @@ class BaseClient {
       bool isAuthenticated = true,
       Map<String, dynamic>? headers}) async {
     try {
-      print("URL: $baseUrl$url");
-      print("PAYLOAD: $payload");
-      print("TOKEN: $_authToken");
-      print("HEADERS: ${await getHeaders2()}");
+      debugPrint("URL: $baseUrl$url");
+      debugPrint("PAYLOAD: $payload");
+      debugPrint("TOKEN: $_authToken");
+      debugPrint("HEADERS: ${await getHeaders2()}");
       var response = await dio.post(url,
           data: payload ?? {},
           options: Options(
@@ -197,10 +205,10 @@ class BaseClient {
                   isAuthenticated: isAuthenticated, headersIncoming: headers)));
       return _processResponse(response);
     } on DioException catch (dioError) {
-      print("DioError: ${dioError.message}");
+      debugPrint("DioError: ${dioError.message}");
       throw _dioException(dioError);
     } catch (e) {
-      print("Error: $e");
+      debugPrint("Error: $e");
       rethrow;
     }
   }
@@ -212,16 +220,18 @@ class BaseClient {
       bool isAuthenticated = true,
       Map<String, dynamic>? headers}) async {
     try {
-      print("URL: $baseUrl$url");
-      print("PAYLOAD: $payload");
+      debugPrint("URL: $baseUrl$url");
+      debugPrint("PAYLOAD: $payload");
+      String? token = await storageService.getAuthToken();
+      debugPrint("TOKEN: $token");
       var response = await dio.put(url,
           data: payload ?? {},
           options: Options(
-              headers: getHeaders(
+              headers: await getHeaders2(
                   isAuthenticated: isAuthenticated, headersIncoming: headers)));
       return _processResponse(response);
     } on DioException catch (dioError) {
-      print("DioError: ${dioError.response}");
+      debugPrint("DioError: ${dioError.response}");
       throw _dioException(dioError);
     } catch (e) {
       rethrow;
@@ -235,16 +245,18 @@ class BaseClient {
       bool isAuthenticated = true,
       Map<String, dynamic>? headers}) async {
     try {
-      print("URL: $baseUrl$url");
-      print("PAYLOAD: $payload");
+      debugPrint("URL: $baseUrl$url");
+      debugPrint("PAYLOAD: $payload");
+      String? token = await storageService.getAuthToken();
+      debugPrint("TOKEN: $token");
       var response = await dio.delete(url,
           data: payload ?? {},
           options: Options(
-              headers: getHeaders(
+              headers: await getHeaders2(
                   isAuthenticated: isAuthenticated, headersIncoming: headers)));
       return _processResponse(response);
     } on DioException catch (dioError) {
-      print("DioError: ${dioError.response}");
+      debugPrint("DioError: ${dioError.response}");
       throw _dioException(dioError);
     } catch (e) {
       rethrow;
@@ -258,13 +270,13 @@ class BaseClient {
       bool isAuthenticated = true,
       Map<String, dynamic>? headers}) async {
     try {
-      print("URL: $baseUrl$url");
+      debugPrint("URL: $baseUrl$url");
       await dio.download(url, filePath,
           options: Options(
               headers: getHeaders(
                   isAuthenticated: isAuthenticated, headersIncoming: headers)));
     } on DioException catch (dioError) {
-      print("DioError: ${dioError.response}");
+      debugPrint("DioError: ${dioError.response}");
       throw _dioException(dioError);
     } catch (e) {
       rethrow;
@@ -277,14 +289,14 @@ class BaseClient {
       bool isAuthenticated = true,
       Map<String, dynamic>? headers}) async {
     try {
-      print("URL: $url");
+      debugPrint("URL: $url");
       var response = await dio.get(url,
           options: Options(
               headers: getHeaders(
                   isAuthenticated: isAuthenticated, headersIncoming: headers)));
       return _processResponse(response);
     } on DioException catch (dioError) {
-      print("DioError: ${dioError.response}");
+      debugPrint("DioError: ${dioError.response}");
       throw _dioException(dioError);
     } catch (e) {
       rethrow;
@@ -301,11 +313,13 @@ class BaseClient {
         var decodedJson = response?.data;
         return decodedJson;
       case 400:
-        var message = jsonDecode(response.toString())["message"];
-        print("./.../// $message");
+        var decodedResponse = jsonDecode(response.toString());
+        var message = decodedResponse["message"]?.toString() ?? 'Bad request';
+        debugPrint("./.../// $message");
         throw ClientException(message: message, response: response?.data);
       case 401:
-        var message = jsonDecode(response.toString())["message"];
+        var decodedResponse = jsonDecode(response.toString());
+        var message = decodedResponse["message"]?.toString() ?? 'Unauthorized';
 /*       Navigator.pushAndRemoveUntil(
             context,
             MaterialPageRoute(
@@ -326,23 +340,27 @@ class BaseClient {
         throw ClientException(
             message: message, response: response?.data, statusCode: 401);
       case 404:
-        var message = jsonDecode(response.toString())["message"];
+        var decodedResponse = jsonDecode(response.toString());
+        var message = decodedResponse["message"]?.toString() ?? 'Not found';
 
         throw ClientException(message: message, response: response?.data);
       case 500:
         {
-          var message = jsonDecode(response.toString())["message"];
-          print("mess: $message");
+          var decodedResponse = jsonDecode(response.toString());
+          var message = decodedResponse["message"]?.toString() ?? 'Internal server error';
+          debugPrint("mess: $message");
 
           throw ServerException(message: message);
         }
       case 504:
-        var message = jsonDecode(response.toString())["message"];
+        var decodedResponse = jsonDecode(response.toString());
+        var message = decodedResponse["message"]?.toString() ?? 'Gateway timeout';
 
         throw ServerException(message: message);
       default:
-        var message = jsonDecode(response.toString())["message"];
-        print("msg::::$message");
+        var decodedResponse = jsonDecode(response.toString());
+        var message = decodedResponse["message"]?.toString() ?? 'Something went wrong';
+        debugPrint("msg::::$message");
 
         throw HttpException(statusCode: response?.statusCode, message: message);
     }

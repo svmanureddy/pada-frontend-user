@@ -53,7 +53,7 @@ class _ErrorToastState extends State<ErrorToast> {
 
   @override
   Widget build(BuildContext context) {
-     print("toast::: $message");
+     debugPrint("toast::: $message");
     return  showToast(context, message!);
   }
 }*/

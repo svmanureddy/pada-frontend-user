@@ -63,10 +63,8 @@ class _ProfilePageState extends State<ProfilePage> {
         "label": "Support",
         "icon": 'assets/images/mail.svg',
         "onTap": () {
-          Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => const SupportPage()));
+          Navigator.push(context,
+              MaterialPageRoute(builder: (context) => const SupportPage()));
         }
       },
       {
@@ -152,91 +150,189 @@ class _ProfilePageState extends State<ProfilePage> {
     super.dispose();
   }
 
+  bool _isDestructiveAction(String label) {
+    return label == "Logout" || label == "Delete user";
+  }
+
+  Color _getIconColor(String label) {
+    if (_isDestructiveAction(label)) {
+      return Colors.red;
+    }
+    return buttonColor;
+  }
+
+  Color _getBackgroundColor(String label) {
+    if (_isDestructiveAction(label)) {
+      return Colors.red.withOpacity(0.1);
+    }
+    return buttonColor.withOpacity(0.1);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: true,
-      backgroundColor: lightWhiteColor,
-      body: SafeArea(
-          child: Stack(
+      backgroundColor: pureWhite,
+      body: Column(
         children: [
-          SizedBox(
-            height: MediaQuery.of(context).size.height,
-            child: Column(
-              children: [
-                Container(
-                  height: MediaQuery.of(context).size.height * 0.45,
-                  width: MediaQuery.of(context).size.width,
-                  decoration: const BoxDecoration(
-                    color: primaryColor,
-                  ),
-                ),
-              ],
+          // Header Section
+          Container(
+            width: MediaQuery.of(context).size.width,
+            padding: const EdgeInsets.only(top: 20, bottom: 16),
+            decoration: const BoxDecoration(
+              color: primaryColor,
             ),
-          ),
-          Positioned(
+            child: SafeArea(
+              bottom: false,
               child: Center(
-            child: SizedBox(
-              height: MediaQuery.of(context).size.height * 0.8,
-              width: MediaQuery.of(context).size.width * 0.95,
-              child: Card(
-                color: Colors.white,
-                child: SingleChildScrollView(
-                  child: Column(children: [
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 15.0, vertical: 25),
-                      child: Text(
-                        "Account",
-                        style: GoogleFonts.inter(
-                            color: pureBlack,
-                            fontSize: 18,
-                            fontWeight: FontWeight.w400),
-                      ),
-                    ),
-                    Padding(
-                        padding: const EdgeInsets.all(10.0),
-                        child: SizedBox(
-                          child: ListView.builder(
-                              controller: _scrollController,
-                              physics: const NeverScrollableScrollPhysics(),
-                              shrinkWrap: true,
-                              itemCount: historyList.length,
-                              padding: EdgeInsets.zero,
-                              itemBuilder: (BuildContext context, int index) {
-                                return Card(
-                                  child: ListTile(
-                                    onTap: historyList[index]['onTap'],
-                                    leading: SvgPicture.asset(
-                                      historyList[index]['icon'],
-                                      fit: BoxFit.fill,
-                                      height: 15,
-                                      width: 15,
-                                      color: buttonColor,
-                                    ),
-                                    title: Text(
-                                      historyList[index]["label"],
-                                      style: GoogleFonts.inter(
-                                          color: pureBlack,
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w400),
-                                    ),
-                                    trailing: const Icon(
-                                      Icons.arrow_forward_ios_rounded,
-                                      size: 24,
-                                      color: pureBlack,
-                                    ),
-                                  ),
-                                );
-                              }),
-                        ))
-                  ]),
+                child: Text(
+                  "Account",
+                  style: GoogleFonts.inter(
+                    color: pureWhite,
+                    fontSize: 24,
+                    fontWeight: FontWeight.w700,
+                  ),
                 ),
               ),
             ),
-          ))
+          ),
+          // Content Section
+          Expanded(
+            child: success
+                ? SingleChildScrollView(
+                    controller: _scrollController,
+                    padding: const EdgeInsets.all(20.0),
+                    child: Column(
+                      children: List.generate(
+                        historyList.length,
+                        (index) {
+                          final item = historyList[index];
+                          final label = item['label'];
+                          final isDestructive = _isDestructiveAction(label);
+
+                          return TweenAnimationBuilder<double>(
+                            duration:
+                                Duration(milliseconds: 300 + (index * 100)),
+                            tween: Tween(begin: 0.0, end: 1.0),
+                            curve: Curves.easeOut,
+                            builder: (context, value, child) {
+                              return Transform.translate(
+                                offset: Offset(0, 20 * (1 - value)),
+                                child: Opacity(
+                                  opacity: value,
+                                  child: child,
+                                ),
+                              );
+                            },
+                            child: Padding(
+                              padding: const EdgeInsets.only(bottom: 12.0),
+                              child: InkWell(
+                                onTap: item['onTap'],
+                                borderRadius: BorderRadius.circular(16),
+                                child: Card(
+                                  elevation: 2,
+                                  shadowColor: Colors.black.withOpacity(0.05),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(16),
+                                    side: BorderSide(
+                                      color: isDestructive
+                                          ? Colors.red.withOpacity(0.2)
+                                          : Colors.transparent,
+                                      width: 1,
+                                    ),
+                                  ),
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      color: pureWhite,
+                                      borderRadius: BorderRadius.circular(16),
+                                    ),
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 16,
+                                      vertical: 16,
+                                    ),
+                                    child: Row(
+                                      children: [
+                                        // Icon Container
+                                        Container(
+                                          width: 48,
+                                          height: 48,
+                                          decoration: BoxDecoration(
+                                            color: _getBackgroundColor(label),
+                                            borderRadius:
+                                                BorderRadius.circular(12),
+                                          ),
+                                          child: Center(
+                                            child: SvgPicture.asset(
+                                              item['icon'],
+                                              fit: BoxFit.contain,
+                                              height: 24,
+                                              width: 24,
+                                              colorFilter: ColorFilter.mode(
+                                                _getIconColor(label),
+                                                BlendMode.srcIn,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                        const SizedBox(width: 16),
+                                        // Text Content
+                                        Expanded(
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                label,
+                                                style: GoogleFonts.inter(
+                                                  color: isDestructive
+                                                      ? Colors.red
+                                                      : pureBlack,
+                                                  fontSize: 16,
+                                                  fontWeight: FontWeight.w600,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                        const SizedBox(width: 8),
+                                        // Arrow Icon
+                                        Container(
+                                          width: 32,
+                                          height: 32,
+                                          decoration: BoxDecoration(
+                                            color: isDestructive
+                                                ? Colors.red.withOpacity(0.1)
+                                                : secondaryColor
+                                                    .withOpacity(0.1),
+                                            shape: BoxShape.circle,
+                                          ),
+                                          child: Icon(
+                                            Icons.arrow_forward_ios_rounded,
+                                            size: 14,
+                                            color: isDestructive
+                                                ? Colors.red
+                                                : secondaryColor,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  )
+                : Center(
+                    child: CircularProgressIndicator(
+                      color: secondaryColor,
+                    ),
+                  ),
+          ),
         ],
-      )),
+      ),
     );
   }
 }

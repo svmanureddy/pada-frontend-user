@@ -13,6 +13,7 @@ import '../../core/constants.dart';
 import '../../core/errors/exceptions.dart';
 import '../../core/providers/app_provider.dart';
 import '../../core/services/notification_service.dart';
+import '../../core/services/storage_service.dart';
 import '../../core/utils.dart';
 import 'bottom_navigation_page.dart';
 import 'home_page.dart';
@@ -60,11 +61,11 @@ class _OrderAcceptedPageState extends State<OrderAcceptedPage> {
     final appProvider = Provider.of<AppProvider>(context, listen: false);
     await appProvider.socketConnect();
     // try {
-    print("=======> before getOrderComplete");
+    debugPrint("=======> before getOrderComplete");
 
     appProvider.socketIO!.on('getOrderComplete', (data) async {
-      print('<=========== GET RESULT OF getOrderComplete $data ===========>');
-      print(
+      debugPrint('<=========== GET RESULT OF getOrderComplete $data ===========>');
+      debugPrint(
           '<=========== GET RESULT OF getOrderComplete ${data['orderData']} ===========>');
       if (data != null) {
         await Navigator.pushAndRemoveUntil(
@@ -73,7 +74,7 @@ class _OrderAcceptedPageState extends State<OrderAcceptedPage> {
           (Route<dynamic> route) => false,
         );
       }
-      // print(
+      // debugPrint(
       // '<========================================================= ${data} ===========>');
 
       // if (data != null) {}
@@ -127,9 +128,14 @@ class _OrderAcceptedPageState extends State<OrderAcceptedPage> {
   getRoute(PointLatLng start, PointLatLng end, AppProvider appProvider) async {
     polylines.clear();
     polylineCoordinates.clear();
+    String? mapKey = await SecureStorageUtil.getValue("mapApiKey");
+
+    while(mapKey==null){
+      Future.delayed(const Duration(milliseconds: 100));
+    }
 
     PolylineResult result = await polylinePoints.getRouteBetweenCoordinates(
-        googleApiKey: googleMapAPI,
+        googleApiKey: mapKey,
         request: PolylineRequest(
           origin: start,
           destination: end,
@@ -140,9 +146,9 @@ class _OrderAcceptedPageState extends State<OrderAcceptedPage> {
       for (var point in result.points) {
         polylineCoordinates.add(LatLng(point.latitude, point.longitude));
       }
-      print("polyline points:::$polylineCoordinates");
+      debugPrint("polyline points:::$polylineCoordinates");
     } else {
-      print("result error:::${result.errorMessage}");
+      debugPrint("result error:::${result.errorMessage}");
     }
 
     addPolyLine(polylineCoordinates, appProvider);

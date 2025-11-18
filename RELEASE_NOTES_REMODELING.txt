@@ -1,0 +1,25 @@
+Play Store Release Notes - Version 1.6.1
+
+🎨 Complete App Remodeling
+We've completely redesigned Pada Delivery from the ground up! Experience a fresh, modern interface with:
+• Beautiful new visual design
+• Intuitive navigation and user flows
+• Enhanced user experience throughout the app
+• Improved performance and speed
+
+This major update brings a completely remodeled app that's faster, more reliable, and easier to use. Thank you for being part of the Pada Delivery community!
+
+---
+
+SHORT VERSION (for Play Store):
+
+🎨 Complete App Remodeling
+We've completely redesigned Pada Delivery with a fresh, modern interface, improved navigation, and enhanced performance. Experience the new look and feel!
+
+---
+
+CONCISE VERSION:
+
+Complete app remodeling with modern design, improved navigation, and enhanced performance.
+
+

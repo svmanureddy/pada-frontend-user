@@ -1,10 +1,8 @@
+import 'package:deliverapp/core/services/storage_service.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:dio/dio.dart';
 import 'package:deliverapp/core/models/connector_model.dart';
 import 'package:deliverapp/core/services/service_locator.dart';
-
-import '../constants.dart';
 import '../models/vehicle_list_model.dart';
 import 'api_client.dart';
 
@@ -15,7 +13,7 @@ class ApiService {
 
   setAuthorisation(String token) {
     api?.setToken(token);
-    print("token success:: $token");
+    debugPrint("token success:: $token");
   }
 
   _processError(e) {
@@ -93,34 +91,16 @@ class ApiService {
     }
   }
 
-  Future socialSignIn(
-      {String? socialId,
-      String? deviceToken,
-      String? email,
-      String? displayName}) async {
-    try {
-      const url = "/app/auth/social-signin";
-      dynamic payload = {
-        "socialId": socialId,
-        "email": email,
-        "displayName": displayName,
-        "deviceToken": deviceToken
-      };
-      var response =
-          await api?.post(url: url, payload: payload, isAuthenticated: false);
-      return response;
-    } catch (e) {
-      _processError(e);
-      rethrow;
-    }
-  }
-
   Future searchPlace({String? sessionToken, String? input}) async {
+    String? mapKey = await SecureStorageUtil.getValue("mapApiKey");
+    while(mapKey==null){
+      Future.delayed(const Duration(milliseconds: 100));
+    }
     try {
       const String baseURL =
           'https://maps.googleapis.com/maps/api/place/autocomplete/json';
       String url =
-          '$baseURL?input=$input&key=$PLACES_API_KEY&sessiontoken=$sessionToken';
+          '$baseURL?input=$input&key=$mapKey&sessiontoken=$sessionToken';
       var response = await api?.get(url: url, isAuthenticated: false);
       debugPrint("//////// $response");
       return response;
@@ -131,9 +111,13 @@ class ApiService {
   }
 
   Future getPlaceDetailsById({String? placeId, String? id}) async {
+    String? mapKey = await SecureStorageUtil.getValue("mapApiKey");
+    while(mapKey==null){
+      Future.delayed(const Duration(milliseconds: 100));
+    }
     try {
       String baseURL =
-          'https://maps.googleapis.com/maps/api/place/details/json?place_id=$placeId&key=$PLACES_API_KEY';
+          'https://maps.googleapis.com/maps/api/place/details/json?place_id=$placeId&key=$mapKey';
       // String url =
       //     '$baseURL?input=$input&key=$PLACES_API_KEY&sessiontoken=$sessionToken';
       var response = await api?.get(url: baseURL, isAuthenticated: false);
@@ -146,22 +130,10 @@ class ApiService {
   }
 
   Future getPlaceId(double lat, double lng) async {
+    String? mapKey = await SecureStorageUtil.getValue("mapApiKey");
     try {
       final String url =
-          'https://maps.googleapis.com/maps/api/geocode/json?latlng=$lat,$lng&key=$PLACES_API_KEY';
-      var response = await api?.get(url: url, isAuthenticated: false);
-      debugPrint("//////// $response");
-      return response;
-    } catch (e) {
-      _processError(e);
-      rethrow;
-    }
-  }
-
-  Future getPlaceDetailsByCoordinates(double lat, double lng) async {
-    try {
-      final String url =
-          'https://maps.googleapis.com/maps/api/geocode/json?latlng=$lat,$lng&key=$PLACES_API_KEY';
+          'https://maps.googleapis.com/maps/api/geocode/json?latlng=$lat,$lng&key=$mapKey';
       var response = await api?.get(url: url, isAuthenticated: false);
       debugPrint("//////// $response");
       return response;
@@ -223,113 +195,6 @@ class ApiService {
       String url = "/app/user/address/$id";
       var response = await api?.delete(url: url, isAuthenticated: true);
       debugPrint("//////// $response");
-      return response;
-    } catch (e) {
-      _processError(e);
-      rethrow;
-    }
-  }
-
-  Future createConnect(
-      {required String description,
-      required LatLng pickup,
-      required LatLng drop,
-      required String pickupString,
-      required String dropString}) async {
-    try {
-      const url = "/app/connect";
-      dynamic payload = {
-        "description": description,
-        "pickup": [pickup.latitude, pickup.longitude],
-        "drop": [drop.latitude, drop.longitude],
-        "address": {
-          "pickup": pickupString,
-          "drop": dropString,
-        }
-      };
-      var response =
-          await api?.post(url: url, payload: payload, isAuthenticated: true);
-      return response;
-    } catch (e) {
-      _processError(e);
-      rethrow;
-    }
-  }
-
-  Future searchConnect({required LatLng pickup, required LatLng drop}) async {
-    try {
-      const url = "/app/connect/search";
-      dynamic payload = {
-        "pickup": [pickup.latitude, pickup.longitude],
-        "drop": [drop.latitude, drop.longitude]
-      };
-      var response =
-          await api?.post(url: url, payload: payload, isAuthenticated: true);
-      return response;
-    } catch (e) {
-      _processError(e);
-      rethrow;
-    }
-  }
-
-  Future newSearchConnect(
-      {required LatLng pickup, required LatLng drop}) async {
-    try {
-      const url = "/app/connect/newsearch";
-      dynamic payload = {
-        "pickup": [pickup.latitude, pickup.longitude],
-        "drop": [drop.latitude, drop.longitude]
-      };
-      var response =
-          await api?.post(url: url, payload: payload, isAuthenticated: true);
-      return response;
-    } catch (e) {
-      _processError(e);
-      rethrow;
-    }
-  }
-
-  Future cancelConnect({required String connectId}) async {
-    try {
-      final url = "/app/connect/cancel/$connectId";
-      var response =
-          await api?.post(url: url, payload: null, isAuthenticated: true);
-      return response;
-    } catch (e) {
-      _processError(e);
-      rethrow;
-    }
-  }
-
-  Future createConversion(
-      {required String senderId,
-      required String receiverId,
-      required String connectId}) async {
-    try {
-      const url = "/app/conversation";
-      dynamic payload = {
-        "senderId": senderId,
-        "receiverId": receiverId,
-        "connectId": connectId
-      };
-      var response =
-          await api?.post(url: url, payload: payload, isAuthenticated: true);
-      return response;
-    } catch (e) {
-      _processError(e);
-      rethrow;
-    }
-  }
-
-  Future getMessages({required String conversationId}) async {
-    try {
-      var url = "/app/message/$conversationId";
-      // dynamic payload = {
-      //   "senderId": senderId,
-      //   "receiverId": receiverId,
-      //   "connectId": connectId
-      // };
-      var response = await api?.get(url: url, isAuthenticated: true);
       return response;
     } catch (e) {
       _processError(e);
@@ -477,105 +342,6 @@ class ApiService {
     // }
   }
 
-  Future getRTCToken(
-      {required String channel,
-      required String role,
-      required String tokenType,
-      required int uid}) async {
-    try {
-      var url = "/app/connect/token/$channel/$role/$tokenType/$uid";
-      // dynamic payload = {
-      //   "senderId": senderId,
-      //   "receiverId": receiverId,
-      //   "connectId": connectId
-      // };
-      var response = await api?.post(url: url, isAuthenticated: true);
-      return response;
-    } catch (e) {
-      _processError(e);
-      rethrow;
-    }
-  }
-
-  Future getNewRefreshToken() async {
-    try {
-      var url = "/app/auth/refreshToken";
-      // dynamic payload = {
-      //   "senderId": senderId,
-      //   "receiverId": receiverId,
-      //   "connectId": connectId
-      // };
-      var response = await api?.getRefreshTok(
-        url: url,
-      );
-      return response;
-    } catch (e) {
-      _processError(e);
-      rethrow;
-    }
-  }
-
-  Future getOrderInvoice(String orderId) async {
-    try {
-      const url = "/app/order/invoice";
-      dynamic payload = {"orderId": orderId};
-      var response =
-          await api?.postNew(url: url, payload: payload, isAuthenticated: true);
-      debugPrint("//////// $response");
-      return response;
-    } catch (e) {
-      _processError(e);
-      rethrow;
-    }
-  }
-
-  Future postReport(
-      {required String receiverId,
-      required String connectId,
-      required String message}) async {
-    try {
-      var url = "/app/report";
-      dynamic payload = {
-        "reportedUser": receiverId,
-        "connectId": connectId,
-        "message": message
-      };
-      var response =
-          await api?.post(url: url, payload: payload, isAuthenticated: true);
-      return response;
-    } catch (e) {
-      _processError(e);
-      rethrow;
-    }
-  }
-
-  Future getFaqList() async {
-    try {
-      var url = "/admin/faq";
-      var response = await api?.get(url: url, isAuthenticated: true);
-      return response;
-    } catch (e) {
-      _processError(e);
-      rethrow;
-    }
-  }
-
-  Future getFaqDetail({required String id}) async {
-    try {
-      var url = "/admin/faq$id";
-      // dynamic payload = {
-      //   "senderId": senderId,
-      //   "receiverId": receiverId,
-      //   "connectId": connectId
-      // };
-      var response = await api?.get(url: url, isAuthenticated: true);
-      return response;
-    } catch (e) {
-      _processError(e);
-      rethrow;
-    }
-  }
-
   Future deleteUser() async {
     try {
       var url = "/app/user/delete";
@@ -585,33 +351,6 @@ class ApiService {
       //   "connectId": connectId
       // };
       var response = await api?.get(url: url, isAuthenticated: true);
-      return response;
-    } catch (e) {
-      _processError(e);
-      rethrow;
-    }
-  }
-
-  Future getOrderIdForPayment({required String amount}) async {
-    try {
-      var url = "/app/payment";
-      dynamic payload = {"amount": amount};
-      var response =
-          await api?.post(url: url, payload: payload, isAuthenticated: true);
-      return response;
-    } catch (e) {
-      _processError(e);
-      rethrow;
-    }
-  }
-
-  Future getStatusOfPayment(
-      {required String amount, required String orderId}) async {
-    try {
-      var url = "/app/payment/status/$orderId";
-      dynamic payload = {"amount": amount};
-      var response =
-          await api?.post(url: url, payload: payload, isAuthenticated: true);
       return response;
     } catch (e) {
       _processError(e);

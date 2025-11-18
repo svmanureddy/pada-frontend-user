@@ -4,8 +4,6 @@ import 'package:flutter/foundation.dart';
 import 'package:geolocator/geolocator.dart' as geo;
 import 'package:deliverapp/core/services/service_locator.dart';
 import 'package:deliverapp/core/services/storage_service.dart';
-import 'package:provider/provider.dart';
-import '../providers/app_provider.dart';
 
 final LocationService locationService = locator.get<LocationService>();
 
@@ -37,12 +35,9 @@ class LocationService {
         locationSettings: const geo.LocationSettings(
           distanceFilter: 50,
         )).listen((geo.Position? position) async {
-      final appProvider = Provider.of<AppProvider>(
-          context,
-          listen: false);
       if (position != null) {
         if (kDebugMode) {
-          print(" POSITION ACCURACY ${position.accuracy} METERS");
+          debugPrint(" POSITION ACCURACY ${position.accuracy} METERS");
         }
         storageService.setLatitude(position.latitude.toString());
         storageService.setLongitude(position.longitude.toString());
@@ -51,14 +46,9 @@ class LocationService {
         //     lat: position.latitude.toString(),
         //     lng: position.longitude.toString());
 
-      } else {
-        String lat, lng;
-        lat = await storageService.getLatitude() ?? '0.0000';
-        lng = await storageService.getLongitude() ?? '0.0000';
-        // appProvider.setLatLong(lat: lat, lng: lng);
       }
       if (kDebugMode) {
-        print(position == null
+        debugPrint(position == null
             ? 'CANNOT FETCH LOCATION'
             : 'LOCATION UPDATED ${position.latitude.toString()}, ${position.longitude.toString()}');
       }

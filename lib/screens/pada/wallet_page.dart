@@ -1,14 +1,11 @@
-// import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:deliverapp/core/constants.dart';
 import 'package:lottie/lottie.dart';
-import 'package:provider/provider.dart';
 import '../../core/colors.dart';
-import '../../core/providers/app_provider.dart';
 import '../../core/services/api_service.dart';
 import '../../core/services/notification_service.dart';
-import '../../widgets/button.dart';
+import '../../core/errors/exceptions.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 
 import '../../widgets/loading_indicator.dart';
@@ -36,360 +33,545 @@ class _WalletPageState extends State<WalletPage> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    // userData();
   }
 
-  // void userData() async {
-  //   await ApiService().getUserProfile().then((value) {
-  //     if (value['success']) {
-  //       userDetails = value['data'];
-  //       walletBal = userDetails['wallet'];
-  //       setState(() {});
-  //     }
-  //   });
-  // }
+  void _showAddMoneySheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => Container(
+        decoration: const BoxDecoration(
+          color: pureWhite,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+        ),
+        padding: EdgeInsets.only(
+          bottom: MediaQuery.of(context).viewInsets.bottom + 16,
+          left: 20,
+          right: 20,
+          top: 20,
+        ),
+        child: SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Handle bar
+              Center(
+                child: Container(
+                  width: 40,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: greyBorderColor,
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 20),
+              Text(
+                "Add Money",
+                style: GoogleFonts.inter(
+                  color: pureBlack,
+                  fontSize: 24,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              const SizedBox(height: 24),
+              // Amount Input
+              TextField(
+                controller: _controller,
+                keyboardType: TextInputType.number,
+                maxLength: 10,
+                textAlign: TextAlign.start,
+                style: GoogleFonts.inter(
+                  color: pureBlack,
+                  fontSize: 18,
+                  fontWeight: FontWeight.w500,
+                ),
+                decoration: InputDecoration(
+                  hintStyle: GoogleFonts.inter(
+                    color: greyText,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w400,
+                  ),
+                  counterText: '',
+                  hintText: "Enter amount",
+                  prefixIcon: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Text(
+                      rupeeSymbol,
+                      style: GoogleFonts.inter(
+                        color: pureBlack,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                  border: OutlineInputBorder(
+                    borderSide: BorderSide(color: greyBorderColor, width: 1),
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: greyBorderColor, width: 1),
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: secondaryColor, width: 2),
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 16,
+                  ),
+                ),
+                onChanged: (str) {
+                  setState(() {});
+                },
+              ),
+              const SizedBox(height: 16),
+              // Quick amount buttons
+              Text(
+                "Quick Amount",
+                style: GoogleFonts.inter(
+                  color: greyText,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              const SizedBox(height: 12),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: InkWell(
+                      onTap: () {
+                        setState(() {
+                          _controller.text = amount1;
+                        });
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 12,
+                        ),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(12),
+                          color: _controller.text == amount1
+                              ? secondaryColor.withOpacity(0.1)
+                              : greyBorderColor.withOpacity(0.1),
+                          border: Border.all(
+                            color: _controller.text == amount1
+                                ? secondaryColor
+                                : Colors.transparent,
+                            width: 2,
+                          ),
+                        ),
+                        child: Center(
+                          child: Text(
+                            "+ $rupeeSymbol$amount1",
+                            style: GoogleFonts.inter(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                              color: _controller.text == amount1
+                                  ? secondaryColor
+                                  : pureBlack,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: InkWell(
+                      onTap: () {
+                        setState(() {
+                          _controller.text = amount2;
+                        });
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 12,
+                        ),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(12),
+                          color: _controller.text == amount2
+                              ? secondaryColor.withOpacity(0.1)
+                              : greyBorderColor.withOpacity(0.1),
+                          border: Border.all(
+                            color: _controller.text == amount2
+                                ? secondaryColor
+                                : Colors.transparent,
+                            width: 2,
+                          ),
+                        ),
+                        child: Center(
+                          child: Text(
+                            "+ $rupeeSymbol$amount2",
+                            style: GoogleFonts.inter(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                              color: _controller.text == amount2
+                                  ? secondaryColor
+                                  : pureBlack,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: InkWell(
+                      onTap: () {
+                        setState(() {
+                          _controller.text = amount3;
+                        });
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 12,
+                        ),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(12),
+                          color: _controller.text == amount3
+                              ? secondaryColor.withOpacity(0.1)
+                              : greyBorderColor.withOpacity(0.1),
+                          border: Border.all(
+                            color: _controller.text == amount3
+                                ? secondaryColor
+                                : Colors.transparent,
+                            width: 2,
+                          ),
+                        ),
+                        child: Center(
+                          child: Text(
+                            "+ $rupeeSymbol$amount3",
+                            style: GoogleFonts.inter(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                              color: _controller.text == amount3
+                                  ? secondaryColor
+                                  : pureBlack,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 24),
+              // Proceed Button
+              SizedBox(
+                width: double.infinity,
+                height: 56,
+                child: ElevatedButton(
+                  onPressed: () async {
+                    if (_controller.text == "" || _controller.text.isEmpty) {
+                      if (mounted) {
+                        notificationService.showToast(
+                          context,
+                          "Please enter amount to process",
+                          type: NotificationType.error,
+                        );
+                      }
+                    } else {
+                      if (context.mounted) {
+                        Navigator.pop(context);
+                        LoadingOverlay.of(context).show();
+                        try {
+                          final value = await ApiService()
+                              .postPaymentApi(amount: int.parse(_controller.text));
+                          debugPrint("sksksk:: $value");
+                          if (value['success'] == true) {
+                            if (context.mounted) {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => WalletWebView(
+                                webUrl: value['data']['liink'],
+                              ),
+                            ),
+                          ).then((onValue) {
+                                if (context.mounted) {
+                            LoadingOverlay.of(context).hide();
+                            addSuccess = true;
+                            setState(() {});
+                            Future.delayed(const Duration(seconds: 2), () {
+                              if (mounted) {
+                                setState(() {
+                                  addSuccess = false;
+                                });
+                              }
+                            });
+                                }
+                          });
+                            }
+                          } else {
+                            // Handle API response with success: false
+                            if (context.mounted) {
+                              LoadingOverlay.of(context).hide();
+                              notificationService.showToast(
+                                context,
+                                value['message'] ?? "Something went wrong",
+                                type: NotificationType.error,
+                              );
+                            }
+                          }
+                        } catch (e) {
+                          debugPrint("error:::: $e");
+                          if (context.mounted) {
+                            LoadingOverlay.of(context).hide();
+                            if (e is ClientException) {
+                              notificationService.showToast(
+                                context,
+                                e.message,
+                                type: NotificationType.error,
+                              );
+                            } else if (e is ServerException) {
+                              notificationService.showToast(
+                                context,
+                                e.message,
+                                type: NotificationType.error,
+                              );
+                            } else if (e is HttpException) {
+                              notificationService.showToast(
+                                context,
+                                e.message,
+                                type: NotificationType.error,
+                              );
+                            } else {
+                              notificationService.showToast(
+                                context,
+                                "Something went wrong. Please try again.",
+                                type: NotificationType.error,
+                              );
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: buttonColor,
+                    foregroundColor: pureWhite,
+                    elevation: 0,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                  ),
+                  child: Text(
+                    "Proceed",
+                    style: GoogleFonts.inter(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
-    final appProvider = Provider.of<AppProvider>(context, listen: false);
     return Scaffold(
       resizeToAvoidBottomInset: true,
-      backgroundColor: lightWhiteColor,
-      body: /*isWeb
-          ?  InAppWebView(
-        initialUrlRequest: URLRequest(url: WebUri("https://rzp.io/i/ziQSO3I")),
-
-      )
-          :*/
-          SafeArea(
-              child: Stack(
-        children: [
-          SizedBox(
-            height: MediaQuery.of(context).size.height,
-            child: Column(
+      backgroundColor: pureWhite,
+      body: FutureBuilder(
+        future: ApiService().getUserProfile(),
+        builder: (context, snapShotData) {
+          if (snapShotData.hasData) {
+            if (snapShotData.data['success']) {
+              userDetails = snapShotData.data['data'];
+              walletBal = userDetails['wallet'];
+            }
+            return Stack(
               children: [
-                Container(
-                  height: MediaQuery.of(context).size.height * 0.45,
-                  width: MediaQuery.of(context).size.width,
-                  decoration: const BoxDecoration(
-                    color: primaryColor,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          Positioned(
-              child: Center(
-            child: SizedBox(
-              height: MediaQuery.of(context).size.height * 0.8,
-              width: MediaQuery.of(context).size.width * 0.95,
-              child: Card(
-                color: Colors.white,
-                child: FutureBuilder(
-                    future: ApiService().getUserProfile(),
-                    builder: (context, snapShotData) {
-                      if (snapShotData.hasData) {
-                        if (snapShotData.data['success']) {
-                          userDetails = snapShotData.data['data'];
-                          walletBal = userDetails['wallet'];
-                        }
-                        return SingleChildScrollView(
-                          child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.all(15.0),
-                                  child: Text(
-                                    "Wallet",
-                                    style: GoogleFonts.inter(
-                                        color: pureBlack,
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.w500),
-                                  ),
+                Column(
+                  children: [
+                    // Header Section
+                    Container(
+                      width: MediaQuery.of(context).size.width,
+                      padding: const EdgeInsets.only(top: 20, bottom: 16),
+                      decoration: const BoxDecoration(
+                        color: primaryColor,
+                      ),
+                      child: SafeArea(
+                        bottom: false,
+                        child: Center(
+                          child: Text(
+                            "Wallet",
+                            style: GoogleFonts.inter(
+                              color: pureWhite,
+                              fontSize: 24,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    // Content Section
+                    Expanded(
+                      child: SingleChildScrollView(
+                        padding: const EdgeInsets.all(20.0),
+                        child: TweenAnimationBuilder<double>(
+                          duration: const Duration(milliseconds: 600),
+                          tween: Tween(begin: 0.0, end: 1.0),
+                          curve: Curves.easeOut,
+                          builder: (context, value, child) {
+                            return Transform.translate(
+                              offset: Offset(0, 20 * (1 - value)),
+                              child: Opacity(
+                                opacity: value,
+                                child: child,
+                              ),
+                            );
+                          },
+                          child: Card(
+                            elevation: 8,
+                            shadowColor: Colors.black.withOpacity(0.1),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.bottomRight,
+                                  colors: [
+                                    secondaryColor.withOpacity(0.1),
+                                    secondaryColor.withOpacity(0.05),
+                                  ],
                                 ),
-                                Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        vertical: 20.0, horizontal: 10),
-                                    child: SizedBox(
-                                      height:
-                                          MediaQuery.of(context).size.height *
-                                              0.2,
-                                      width: MediaQuery.of(context).size.width,
-                                      child: Card(
-                                          elevation: 4,
-                                          child: Padding(
-                                            padding: const EdgeInsets.all(10.0),
-                                            child: Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment
-                                                      .spaceBetween,
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.center,
-                                              children: [
-                                                Column(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment.center,
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.start,
-                                                  children: [
-                                                    Text(
-                                                      "Wallet Balance",
-                                                      style: GoogleFonts.inter(
-                                                          color: pureBlack,
-                                                          fontSize: 16,
-                                                          fontWeight:
-                                                              FontWeight.w400),
-                                                    ),
-                                                    Padding(
-                                                      padding:
-                                                          const EdgeInsets.only(
-                                                              top: 5.0),
-                                                      child: Text(
-                                                        "Balance $rupeeSymbol $walletBal",
-                                                        style: GoogleFonts.inter(
-                                                            color:
-                                                                addressTextColor,
-                                                            fontSize: 14,
-                                                            fontWeight:
-                                                                FontWeight
-                                                                    .w400),
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ),
-                                                SizedBox(
-                                                  height: MediaQuery.of(context)
-                                                          .size
-                                                          .height *
-                                                      0.025,
-                                                  child: CustomButton(
-                                                      borderRadius: 5,
-                                                      buttonLabel: "Add Money",
-                                                      backGroundColor:
-                                                          buttonColor,
-                                                      onTap: () {
-                                                        showModalBottomSheet(
-                                                            context: context,
-                                                            builder: (context) {
-                                                              return SafeArea(
-                                                                child: SizedBox(
-                                                                  height: MediaQuery.of(
-                                                                              context)
-                                                                          .size
-                                                                          .height *
-                                                                      0.27,
-                                                                  width: MediaQuery.of(
-                                                                              context)
-                                                                          .size
-                                                                          .width *
-                                                                      0.95,
-                                                                  child: Column(
-                                                                    crossAxisAlignment:
-                                                                        CrossAxisAlignment
-                                                                            .start,
-                                                                    children: [
-                                                                      Padding(
-                                                                        padding: const EdgeInsets
-                                                                            .all(
-                                                                            15.0),
-                                                                        child:
-                                                                            Text(
-                                                                          "Add Money",
-                                                                          style: GoogleFonts.inter(
-                                                                              color: pureBlack,
-                                                                              fontSize: 18,
-                                                                              fontWeight: FontWeight.w500),
-                                                                        ),
-                                                                      ),
-                                                                      Padding(
-                                                                        padding: const EdgeInsets
-                                                                            .only(
-                                                                            left:
-                                                                                15.0),
-                                                                        child:
-                                                                            SizedBox(
-                                                                          width:
-                                                                              MediaQuery.of(context).size.width * 0.4,
-                                                                          height:
-                                                                              MediaQuery.of(context).size.height * 0.05,
-                                                                          child:
-                                                                              TextField(
-                                                                            controller:
-                                                                                _controller,
-                                                                            keyboardType:
-                                                                                TextInputType.number,
-                                                                            maxLength:
-                                                                                10,
-                                                                            textAlign:
-                                                                                TextAlign.start,
-                                                                            style: GoogleFonts.inter(
-                                                                                color: pureBlack,
-                                                                                fontSize: 18,
-                                                                                fontWeight: FontWeight.w400),
-                                                                            decoration: InputDecoration(
-                                                                                hintStyle: GoogleFonts.inter(color: greyBorderColor, fontSize: 16, fontWeight: FontWeight.w400),
-                                                                                counterText: '',
-                                                                                hintText: "Enter amount",
-                                                                                border: OutlineInputBorder(borderSide: const BorderSide(color: greyBorderColor, width: 1), borderRadius: BorderRadius.circular(10))),
-                                                                            onChanged:
-                                                                                (str) {
-                                                                              // if (str.length != 10) {
-                                                                              //   isFilled = false;
-                                                                              // } else {
-                                                                              //   isFilled = true;
-                                                                              // }
-                                                                              setState(() {});
-                                                                            },
-                                                                          ),
-                                                                        ),
-                                                                      ),
-                                                                      Padding(
-                                                                        padding: const EdgeInsets
-                                                                            .symmetric(
-                                                                            vertical:
-                                                                                10.0),
-                                                                        child:
-                                                                            SizedBox(
-                                                                          width:
-                                                                              MediaQuery.of(context).size.width * 0.5,
-                                                                          child:
-                                                                              Row(
-                                                                            mainAxisAlignment:
-                                                                                MainAxisAlignment.spaceEvenly,
-                                                                            children: [
-                                                                              InkWell(
-                                                                                onTap: () {
-                                                                                  _controller.text = amount1;
-                                                                                },
-                                                                                child: Container(
-                                                                                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                                                                                  decoration: BoxDecoration(borderRadius: BorderRadius.circular(25), color: greyBorderColor.withOpacity(0.5)),
-                                                                                  child: Text(
-                                                                                    "+ $amount1",
-                                                                                    style: GoogleFonts.poppins(fontSize: 12, fontWeight: FontWeight.w400),
-                                                                                  ),
-                                                                                ),
-                                                                              ),
-                                                                              InkWell(
-                                                                                onTap: () {
-                                                                                  _controller.text = amount2;
-                                                                                },
-                                                                                child: Container(
-                                                                                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                                                                                  decoration: BoxDecoration(borderRadius: BorderRadius.circular(25), color: greyBorderColor.withOpacity(0.5)),
-                                                                                  child: Text(
-                                                                                    "+ $amount2",
-                                                                                    style: GoogleFonts.poppins(fontSize: 12, fontWeight: FontWeight.w400),
-                                                                                  ),
-                                                                                ),
-                                                                              ),
-                                                                              InkWell(
-                                                                                onTap: () {
-                                                                                  _controller.text = amount3;
-                                                                                },
-                                                                                child: Container(
-                                                                                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                                                                                  decoration: BoxDecoration(borderRadius: BorderRadius.circular(25), color: greyBorderColor.withOpacity(0.5)),
-                                                                                  child: Text(
-                                                                                    "+ $amount3",
-                                                                                    style: GoogleFonts.poppins(fontSize: 12, fontWeight: FontWeight.w400),
-                                                                                  ),
-                                                                                ),
-                                                                              ),
-                                                                            ],
-                                                                          ),
-                                                                        ),
-                                                                      ),
-                                                                      const Divider(
-                                                                        color:
-                                                                            greyBorderColor,
-                                                                        thickness:
-                                                                            1,
-                                                                      ),
-                                                                      const Spacer(),
-                                                                      SafeArea(
-                                                                        child: Align(
-                                                                            alignment: Alignment.center,
-                                                                            child: SizedBox(
-                                                                                height: MediaQuery.of(context).size.height * 0.05,
-                                                                                child: CustomButton(
-                                                                                    buttonLabel: "Proceed",
-                                                                                    backGroundColor: buttonColor,
-                                                                                    onTap: () async {
-                                                                                      if (_controller.text == "" || _controller.text.isEmpty) {
-                                                                                        if (mounted) {
-                                                                                          notificationService.showToast(context, "Please enter amount to process", type: NotificationType.error);
-                                                                                        }
-                                                                                      } else {
-                                                                                        // var result = await (Connectivity().checkConnectivity());
-                                                                                        // if (result == ConnectivityResult.wifi || result == ConnectivityResult.mobile) {
-                                                                                        if (context.mounted) {
-                                                                                          LoadingOverlay.of(context).show();
-                                                                                          await ApiService().postPaymentApi(amount: int.parse(_controller.text)).then((value) {
-                                                                                            print("sksksk:: $value");
-                                                                                            Navigator.push(
-                                                                                                context,
-                                                                                                MaterialPageRoute(
-                                                                                                    builder: (context) => WalletWebView(
-                                                                                                          webUrl: value['data']['liink'],
-                                                                                                        ))).then((onValue) {
-                                                                                              LoadingOverlay.of(context).hide();
-                                                                                              addSuccess = true;
-                                                                                              setState(() {});
-                                                                                              Future.delayed(const Duration(seconds: 2), () {
-                                                                                                setState(() {
-                                                                                                  addSuccess = false;
-                                                                                                });
-                                                                                              });
-
-                                                                                              Navigator.pop(context);
-                                                                                            });
-                                                                                          });
-                                                                                        }
-                                                                                        // } else {
-                                                                                        //   if (context.mounted) {
-                                                                                        //     notificationService.showToast(context, "Please check your Internet Connection", type: NotificationType.error);
-                                                                                        //   }
-                                                                                        // }
-                                                                                      }
-                                                                                    },
-                                                                                    buttonWidth: MediaQuery.of(context).size.width * 0.9))),
-                                                                      )
-                                                                    ],
-                                                                  ),
-                                                                ),
-                                                              );
-                                                            });
-                                                      },
-                                                      buttonTextSize: 12,
-                                                      buttonWidth: 100),
-                                                )
-                                              ],
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              padding: const EdgeInsets.all(24.0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    children: [
+                                      Container(
+                                        width: 56,
+                                        height: 56,
+                                        decoration: BoxDecoration(
+                                          color:
+                                              secondaryColor.withOpacity(0.2),
+                                          shape: BoxShape.circle,
+                                        ),
+                                        child: Icon(
+                                          Icons.account_balance_wallet,
+                                          color: secondaryColor,
+                                          size: 28,
+                                        ),
+                                      ),
+                                      const SizedBox(width: 16),
+                                      Expanded(
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              "Wallet Balance",
+                                              style: GoogleFonts.inter(
+                                                color: addressTextColor,
+                                                fontSize: 14,
+                                                fontWeight: FontWeight.w600,
+                                              ),
                                             ),
-                                          )),
-                                    )),
-                              ]),
-                        );
-                      } else {
-                        return const Center(child: CircularProgressIndicator());
-                      }
-                    }),
-              ),
-            ),
-          )),
-          addSuccess
-              ? Positioned(
-                  right: 8,
-                  child: Lottie.asset(
-                    'assets/images/succesGif.json', // Replace with your Lottie success animation
-                    width: 50,
-                    height: 50,
-                    repeat: false,
+                                            const SizedBox(height: 4),
+                                            Text(
+                                              "$rupeeSymbol $walletBal",
+                                              style: GoogleFonts.inter(
+                                                color: pureBlack,
+                                                fontSize: 32,
+                                                fontWeight: FontWeight.w700,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 24),
+                                  SizedBox(
+                                    width: double.infinity,
+                                    height: 56,
+                                    child: ElevatedButton(
+                                      onPressed: () =>
+                                          _showAddMoneySheet(context),
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: buttonColor,
+                                        foregroundColor: pureWhite,
+                                        elevation: 0,
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(16),
+                                        ),
+                                      ),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          Icon(
+                                            Icons.add_circle_outline,
+                                            size: 20,
+                                          ),
+                                          const SizedBox(width: 8),
+                                          Text(
+                                            "Add Money",
+                                            style: GoogleFonts.inter(
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.w600,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                // Success animation overlay
+                if (addSuccess)
+                  Container(
+                    color: Colors.black.withOpacity(0.3),
+                    child: Center(
+                      child: Lottie.asset(
+                        'assets/images/succesGif.json',
+                        width: 200,
+                        height: 200,
+                        repeat: false,
+                      ),
+                    ),
                   ),
-                )
-              : Offstage(),
-        ],
-      )),
+              ],
+            );
+          } else {
+            return Scaffold(
+              backgroundColor: pureWhite,
+              body: Center(
+                child: CircularProgressIndicator(
+                  color: secondaryColor,
+                ),
+              ),
+            );
+          }
+        },
+      ),
     );
   }
 }
@@ -406,16 +588,17 @@ class _WalletWebViewState extends State<WalletWebView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        resizeToAvoidBottomInset: true,
         body: SafeArea(
-      child: InAppWebView(
-        onLoadStart: (con, uri) {
-          LoadingOverlay.of(context).show();
-        },
-        onLoadStop: (con, uri) {
-          LoadingOverlay.of(context).hide();
-        },
-        initialUrlRequest: URLRequest(url: WebUri(widget.webUrl)),
-      ),
-    ));
+          child: InAppWebView(
+            onLoadStart: (con, uri) {
+              LoadingOverlay.of(context).show();
+            },
+            onLoadStop: (con, uri) {
+              LoadingOverlay.of(context).hide();
+            },
+            initialUrlRequest: URLRequest(url: WebUri(widget.webUrl)),
+          ),
+        ));
   }
 }

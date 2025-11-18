@@ -1,10 +1,13 @@
+import 'dart:convert';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../core/colors.dart';
+import '../../core/errors/exceptions.dart';
 import '../../core/services/notification_service.dart';
+import '../../core/services/api_service.dart';
 import '../../core/utils.dart';
 import '../../widgets/button.dart';
 import 'otp_screen.dart';
@@ -19,13 +22,13 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   TextEditingController mobNumberController = TextEditingController();
   bool isFilled = false;
+  bool submitting = false;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: true,
       backgroundColor: pureWhite,
-      body: SafeArea(
-          child: GestureDetector(
+      body: GestureDetector(
         onTap: () {
           FocusScope.of(context).unfocus();
         },
@@ -33,152 +36,322 @@ class _LoginPageState extends State<LoginPage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
+              // Header
               Container(
-                height: MediaQuery.of(context).size.height * 0.45,
+                height: MediaQuery.of(context).size.height * 0.35,
                 width: MediaQuery.of(context).size.width,
-                decoration: const BoxDecoration(
-                  color: primaryColor,
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      primaryColor,
+                      Color(0xFF003D9E),
+                      secondaryColor,
+                    ],
+                  ),
                 ),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  crossAxisAlignment: CrossAxisAlignment.center,
+                child: Stack(
                   children: [
-                    SizedBox(
-                      height: MediaQuery.of(context).size.height * 0.1,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          SizedBox(
-                              width: MediaQuery.of(context).size.width * 0.15,
-                              height: MediaQuery.of(context).size.height * 0.06,
-                              child: SvgPicture.asset(
-                                  'assets/images/pada_logo.svg',
-                                  fit: BoxFit.fill)),
-                          Text("PADA DELIVERY",
-                              textAlign: TextAlign.center,
-                              style: GoogleFonts.inter(
-                                  color: pureWhite,
-                                  fontSize: 24,
-                                  fontWeight: FontWeight.w900))
-                        ],
+                    // Decorative circles in background
+                    Positioned(
+                      top: -80,
+                      right: -60,
+                      child: Container(
+                        width: 200,
+                        height: 200,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: pureWhite.withOpacity(0.08),
+                        ),
                       ),
                     ),
-                    SizedBox(
-                        width: MediaQuery.of(context).size.width * 0.9,
-                        height: MediaQuery.of(context).size.height * 0.18,
-                        child: SvgPicture.asset('assets/images/login_image.svg',
-                            fit: BoxFit.fill))
+                    Positioned(
+                      top: 40,
+                      left: -40,
+                      child: Container(
+                        width: 120,
+                        height: 120,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: pureWhite.withOpacity(0.06),
+                        ),
+                      ),
+                    ),
+                    Positioned(
+                      bottom: -50,
+                      right: 20,
+                      child: Container(
+                        width: 150,
+                        height: 150,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: pureWhite.withOpacity(0.05),
+                        ),
+                      ),
+                    ),
+                    // Main content
+                    Center(
+                      child: TweenAnimationBuilder<double>(
+                        duration: const Duration(milliseconds: 800),
+                        tween: Tween(begin: 0.0, end: 1.0),
+                        curve: Curves.easeOut,
+                        builder: (context, value, child) {
+                          return Transform.scale(
+                            scale: 0.8 + (0.2 * value),
+                            child: Opacity(
+                              opacity: value,
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  // Logo with glow effect
+                                  Container(
+                                    padding: const EdgeInsets.all(18),
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      color: pureWhite.withOpacity(0.15),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: pureWhite.withOpacity(0.2),
+                                          blurRadius: 30,
+                                          spreadRadius: 5,
+                                        ),
+                                      ],
+                                    ),
+                                    child: SizedBox(
+                                      width: MediaQuery.of(context).size.width *
+                                          0.18,
+                                      height:
+                                          MediaQuery.of(context).size.height *
+                                              0.08,
+                                      child: SvgPicture.asset(
+                                        'assets/images/pada_logo.svg',
+                                        fit: BoxFit.contain,
+                                        colorFilter: ColorFilter.mode(
+                                          pureWhite,
+                                          BlendMode.srcIn,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(height: 18),
+                                  // App name with better typography
+                                  Text(
+                                    "Pada Delivery",
+                                    textAlign: TextAlign.center,
+                                    style: GoogleFonts.inter(
+                                      color: pureWhite,
+                                      fontSize: 24,
+                                      fontWeight: FontWeight.w900,
+                                      letterSpacing: 1.5,
+                                      shadows: [
+                                        Shadow(
+                                          color: Colors.black.withOpacity(0.2),
+                                          blurRadius: 8,
+                                          offset: const Offset(0, 2),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
                   ],
                 ),
               ),
-              Container(
-                padding: const EdgeInsets.all(10),
-                // height: MediaQuery.of(context).size.height * 0.5,
-                width: MediaQuery.of(context).size.width,
-                decoration: const BoxDecoration(
-                  color: pureWhite,
-                ),
+              // Content
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 16.0, vertical: 16.0),
                 child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        SizedBox(
-                            width: MediaQuery.of(context).size.width * 0.05,
-                            height: MediaQuery.of(context).size.height * 0.025,
-                            child: SvgPicture.asset('assets/images/hand.svg',
-                                fit: BoxFit.fill)),
-                        const SizedBox(
-                          width: 5,
+                    Card(
+                      elevation: 4,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16)),
+                      child: Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                SizedBox(
+                                    width: 20,
+                                    height: 20,
+                                    child: SvgPicture.asset(
+                                        'assets/images/hand.svg',
+                                        fit: BoxFit.contain)),
+                                const SizedBox(width: 8),
+                                Text("Welcome",
+                                    style: GoogleFonts.inter(
+                                        color: const Color(0xFF737373),
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.w700)),
+                              ],
+                            ),
+                            const SizedBox(height: 4),
+                            Text("Enter mobile number",
+                                style: GoogleFonts.inter(
+                                    color: const Color(0xFF8A8A8A),
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w400)),
+                            const SizedBox(height: 16),
+                            Container(
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(12),
+                                  border: Border.all(color: greyBorderColor),
+                                  color: Colors.white),
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 12, vertical: 6),
+                              child: Row(
+                                children: [
+                                  SvgPicture.asset(
+                                    'assets/images/india_flag.svg',
+                                    width: 24,
+                                    height: 16,
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Text('+91',
+                                      style: GoogleFonts.inter(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w600,
+                                          color: pureBlack)),
+                                  const SizedBox(width: 8),
+                                  Expanded(
+                                    child: TextField(
+                                      controller: mobNumberController,
+                                      keyboardType: TextInputType.number,
+                                      maxLength: 10,
+                                      decoration: InputDecoration(
+                                        hintText: 'Mobile Number',
+                                        counterText: '',
+                                        border: InputBorder.none,
+                                      ),
+                                      style: GoogleFonts.inter(
+                                          color: pureBlack, fontSize: 16),
+                                      readOnly: submitting,
+                                      onChanged: (str) {
+                                        isFilled = str.length == 10;
+                                        setState(() {});
+                                      },
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
                         ),
-                        Text("WELCOME",
-                            textAlign: TextAlign.center,
-                            style: GoogleFonts.inter(
-                                color: const Color(0xFF737373),
-                                fontSize: 22,
-                                fontWeight: FontWeight.w800))
-                      ],
+                      ),
                     ),
-                    SizedBox(height: MediaQuery.of(context).size.height / 30),
-                    Text(
-                        "Enter mobile number", //"To place a delivery order, register using your social media login or OTP mobile number.",
-                        textAlign: TextAlign.center,
-                        style: GoogleFonts.inter(
-                            color: Colors.black,
-                            fontSize: 15,
-                            fontWeight: FontWeight.w400)),
-                    SizedBox(height: MediaQuery.of(context).size.height / 30),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.only(right: 20.0),
-                          child: SizedBox(
-                              width: MediaQuery.of(context).size.width * 0.07,
-                              height: MediaQuery.of(context).size.height * 0.02,
-                              child: SvgPicture.asset(
-                                  'assets/images/india_flag.svg',
-                                  fit: BoxFit.fill)),
-                        ),
-                        SizedBox(
-                          width: MediaQuery.of(context).size.width * 0.7,
-                          child: TextField(
-                            controller: mobNumberController,
-                            keyboardType: TextInputType.number,
-                            maxLength: 10,
-                            textAlign: TextAlign.center,
-                            style: GoogleFonts.inter(
-                                color: pureBlack,
-                                fontSize: 18,
-                                fontWeight: FontWeight.w400),
-                            decoration: InputDecoration(
-                                hintStyle: GoogleFonts.inter(
-                                    color: pureBlack,
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w400),
-                                counterText: '',
-                                hintText: "Mobile Number",
-                                border: const UnderlineInputBorder()),
-                            onChanged: (str) {
-                              if (str.length != 10) {
-                                isFilled = false;
-                              } else {
-                                isFilled = true;
-                              }
-                              setState(() {});
-                            },
-                          ),
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: MediaQuery.of(context).size.height / 20),
+                    const SizedBox(height: 20),
                     SizedBox(
                       width: MediaQuery.of(context).size.width,
-                      height: MediaQuery.of(context).size.height * 0.05,
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                        child: CustomButton(
-                          buttonLabel: 'Login',
-                          buttonWidth: double.infinity,
-                          backGroundColor: buttonColor,
-                          onTap: () async {
-                            !isFilled
-                                ? notificationService.showToast(
-                                    context, "Enter valid mobile number",
-                                    type: NotificationType.error)
-                                : Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => OtpScreen(
-                                        mobNumber: mobNumberController.text,
-                                      ),
+                      height: MediaQuery.of(context).size.height * 0.055,
+                      child: CustomButton(
+                        buttonLabel: 'Continue',
+                        buttonWidth: double.infinity,
+                        backGroundColor: isFilled
+                            ? buttonColor
+                            : greyBorderColor.withOpacity(0.6),
+                        loading: submitting,
+                        onTap: () async {
+                          if (!isFilled || submitting) {
+                            if (!isFilled) {
+                              notificationService.showToast(
+                                  context, "Enter valid mobile number",
+                                  type: NotificationType.error);
+                            }
+                            return;
+                          }
+                          if (mounted) {
+                            setState(() {
+                              submitting = true;
+                            });
+                          }
+                          try {
+                            final resp = await ApiService()
+                                .getOtp(mobileNumber: mobNumberController.text);
+
+                            if (!mounted) return;
+
+                            // Handle response - check if it's a Map or needs parsing
+                            dynamic responseData = resp;
+                            if (resp is String) {
+                              try {
+                                responseData = jsonDecode(resp);
+                              } catch (e) {
+                                debugPrint("Failed to parse response: $e");
+                              }
+                            }
+
+                            // Check success condition - handle both bool and string "true"
+                            bool isSuccess = false;
+                            if (responseData != null && responseData is Map) {
+                              final successValue = responseData['success'];
+                              isSuccess = successValue == true ||
+                                  successValue == 'true' ||
+                                  successValue == 1;
+                            }
+
+                            // Hide loader before navigation
+                            if (mounted) {
+                              setState(() {
+                                submitting = false;
+                              });
+                            }
+
+                            if (isSuccess) {
+                              // Navigate immediately after hiding loader
+                              if (mounted) {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => OtpScreen(
+                                      mobNumber: mobNumberController.text,
                                     ),
-                                  );
-                          },
-                        ),
+                                  ),
+                                );
+                              }
+                            } else {
+                              final message = (responseData != null &&
+                                      responseData is Map &&
+                                      responseData['message'] != null)
+                                  ? responseData['message'].toString()
+                                  : 'Failed to send OTP';
+                              notificationService.showToast(context, message,
+                                  type: NotificationType.error);
+                            }
+                          } catch (e) {
+                            if (!mounted) return;
+
+                            setState(() {
+                              submitting = false;
+                            });
+
+                            String errorMessage = 'Something went wrong';
+                            if (e is ClientException) {
+                              errorMessage =
+                                  e.message ?? 'Something went wrong';
+                            } else if (e is ServerException) {
+                              errorMessage =
+                                  e.message ?? 'Something went wrong';
+                            } else if (e is HttpException) {
+                              errorMessage =
+                                  e.message ?? 'Something went wrong';
+                            }
+
+                            notificationService.showToast(context, errorMessage,
+                                type: NotificationType.error);
+                          }
+                        },
+                        borderRadius: 28,
                       ),
                     ),
 
@@ -291,7 +464,7 @@ class _LoginPageState extends State<LoginPage> {
                               recognizer: TapGestureRecognizer()
                                 ..onTap = () {
                                   launchURL(Uri.parse(
-                                      'https://innlyn.com/terms-and-conditions-and-privacy-policy/')); // Replace with your link URL
+                                      'https://snowcodestechbiz.com/portfolio/')); // Replace with your link URL
                                 },
                             ),
                             TextSpan(
@@ -311,7 +484,7 @@ class _LoginPageState extends State<LoginPage> {
                               recognizer: TapGestureRecognizer()
                                 ..onTap = () {
                                   launchURL(Uri.parse(
-                                      'https://innlyn.com/terms-and-conditions-and-privacy-policy/')); // Replace with your link URL
+                                      'https://snowcodestechbiz.com/portfolio/')); // Replace with your link URL
                                 },
                             ),
                           ],
@@ -324,7 +497,7 @@ class _LoginPageState extends State<LoginPage> {
             ],
           ),
         ),
-      )),
+      ),
     );
   }
 

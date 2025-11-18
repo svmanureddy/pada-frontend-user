@@ -1,13 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:provider/provider.dart';
 
 import '../../core/colors.dart';
-import '../../core/providers/app_provider.dart';
 import '../../core/services/api_service.dart';
 import '../../core/services/notification_service.dart';
-import '../../widgets/button.dart';
 import '../../widgets/loading_indicator.dart';
 
 class EditProfilePage extends StatefulWidget {
@@ -26,7 +23,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
   bool isLoaded = false;
 
   bool isFilled = false;
-  final Prog _prog = Prog();
   @override
   void initState() {
     // TODO: implement initState
@@ -35,7 +31,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
   }
 
   loadData() async {
-    final appProvider = Provider.of<AppProvider>(context, listen: false);
     await ApiService().getUserProfile().then((value) {
       if (value['success']) {
         userDetails = value['data'];
@@ -58,212 +53,436 @@ class _EditProfilePageState extends State<EditProfilePage> {
         onTap: () {
           FocusScope.of(context).unfocus();
         },
-        child: SafeArea(
-            child: !isLoaded
-                ? const Center(
-                    child: CircularProgressIndicator(
-                      color: Colors.blue,
+        child: !isLoaded
+            ? const Center(
+                child: CircularProgressIndicator(
+                  color: secondaryColor,
+                ),
+              )
+            : Column(
+                children: [
+                  // Header Section
+                  Container(
+                    width: MediaQuery.of(context).size.width,
+                    padding: const EdgeInsets.only(top: 20, bottom: 20),
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [
+                          primaryColor,
+                          Color(0xFF003D9E),
+                          secondaryColor,
+                        ],
+                      ),
                     ),
-                  )
-                : SingleChildScrollView(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        Stack(
-                          children: [
-                            Container(
-                              height: MediaQuery.of(context).size.height * 0.35,
-                              width: MediaQuery.of(context).size.width,
-                              decoration: const BoxDecoration(
-                                color: primaryColor,
-                              ),
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  SizedBox(
-                                    height: MediaQuery.of(context).size.height *
-                                        0.1,
-                                    child: Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceAround,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
-                                      children: [
-                                        SizedBox(
-                                            width: MediaQuery.of(context)
-                                                    .size
-                                                    .width *
-                                                0.15,
-                                            height: MediaQuery.of(context)
-                                                    .size
-                                                    .height *
-                                                0.06,
-                                            child: SvgPicture.asset(
-                                                'assets/images/pada_logo.svg',
-                                                fit: BoxFit.fill)),
-                                        Text("PADA DELIVERY",
-                                            textAlign: TextAlign.center,
-                                            style: GoogleFonts.inter(
-                                                color: pureWhite,
-                                                fontSize: 24,
-                                                fontWeight: FontWeight.w900))
-                                      ],
-                                    ),
-                                  ),
-                                ],
+                    child: SafeArea(
+                      bottom: false,
+                      child: Stack(
+                        children: [
+                          // Decorative circles in background
+                          Positioned(
+                            top: -60,
+                            right: -50,
+                            child: Container(
+                              width: 180,
+                              height: 180,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: pureWhite.withOpacity(0.08),
                               ),
                             ),
-                            Positioned(
-                              child: Center(
-                                child: Padding(
-                                  padding: const EdgeInsets.all(15.0),
-                                  child: Container(
-                                    decoration: BoxDecoration(
-                                        color: pureWhite,
-                                        borderRadius: BorderRadius.circular(5)),
-                                    height: MediaQuery.of(context).size.height *
-                                        0.05,
-                                    width: MediaQuery.of(context).size.width,
-                                    child: Row(
-                                      children: [
-                                        Padding(
-                                          padding:
-                                              const EdgeInsets.only(left: 10.0),
-                                          child: InkWell(
-                                            child: const Icon(
-                                              Icons.arrow_back_ios,
-                                              color: pureBlack,
-                                            ),
-                                            onTap: () {
-                                              Navigator.pop(context);
-                                            },
-                                          ),
+                          ),
+                          Positioned(
+                            top: 30,
+                            left: -30,
+                            child: Container(
+                              width: 110,
+                              height: 110,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: pureWhite.withOpacity(0.06),
+                              ),
+                            ),
+                          ),
+                          Positioned(
+                            bottom: -40,
+                            right: 20,
+                            child: Container(
+                              width: 130,
+                              height: 130,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: pureWhite.withOpacity(0.05),
+                              ),
+                            ),
+                          ),
+                          // Main content
+                          Column(
+                            children: [
+                              // Back button and title row
+                              Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 16.0),
+                                child: Row(
+                                  children: [
+                                    InkWell(
+                                      onTap: () {
+                                        Navigator.pop(context);
+                                      },
+                                      borderRadius: BorderRadius.circular(8),
+                                      child: Container(
+                                        width: 40,
+                                        height: 40,
+                                        decoration: BoxDecoration(
+                                          color: pureWhite.withOpacity(0.2),
+                                          borderRadius: BorderRadius.circular(8),
                                         ),
-                                        const Spacer(),
-                                        Text(
-                                          "Profile",
-                                          style: GoogleFonts.inter(
-                                              color: pureBlack,
-                                              fontSize: 18,
-                                              fontWeight: FontWeight.w400),
-                                        ),
-                                        const Spacer(),
-                                        const Icon(
-                                          Icons.arrow_back_ios,
+                                        child: const Icon(
+                                          Icons.arrow_back_ios_rounded,
                                           color: pureWhite,
+                                          size: 20,
                                         ),
-                                      ],
+                                      ),
                                     ),
-                                  ),
+                                    const Spacer(),
+                                    Text(
+                                      "Profile",
+                                      style: GoogleFonts.inter(
+                                        color: pureWhite,
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.w700,
+                                      ),
+                                    ),
+                                    const Spacer(),
+                                    const SizedBox(
+                                        width: 40), // Balance for back button
+                                  ],
                                 ),
                               ),
-                            ),
-                          ],
-                        ),
-                        Container(
-                          // height: MediaQuery.of(context).size.height * 0.5,
-                          width: MediaQuery.of(context).size.width,
-                          decoration: const BoxDecoration(
-                            color: pureWhite,
+                              const SizedBox(height: 20),
+                              // Logo and branding with animation
+                              TweenAnimationBuilder<double>(
+                                duration: const Duration(milliseconds: 800),
+                                tween: Tween(begin: 0.0, end: 1.0),
+                                curve: Curves.easeOut,
+                                builder: (context, value, child) {
+                                  return Transform.scale(
+                                    scale: 0.8 + (0.2 * value),
+                                    child: Opacity(
+                                      opacity: value,
+                                      child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                        children: [
+                                          // Logo with glow effect
+                                          Container(
+                                            padding: const EdgeInsets.all(16),
+                                            decoration: BoxDecoration(
+                                              shape: BoxShape.circle,
+                                              color: pureWhite.withOpacity(0.15),
+                                              boxShadow: [
+                                                BoxShadow(
+                                                  color: pureWhite.withOpacity(0.2),
+                                                  blurRadius: 30,
+                                                  spreadRadius: 5,
+                                                ),
+                                              ],
+                                            ),
+                                            child: SizedBox(
+                                              width: MediaQuery.of(context)
+                                                      .size
+                                                      .width *
+                                                  0.16,
+                                              height: MediaQuery.of(context)
+                                                      .size
+                                                      .height *
+                                                  0.07,
+                                              child: SvgPicture.asset(
+                                                'assets/images/pada_logo.svg',
+                                                fit: BoxFit.contain,
+                                                colorFilter: ColorFilter.mode(
+                                                  pureWhite,
+                                                  BlendMode.srcIn,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                          const SizedBox(height: 16),
+                                          // App name with better typography
+                                          Text(
+                                            "Pada Delivery",
+                                            textAlign: TextAlign.center,
+                                            style: GoogleFonts.inter(
+                                              color: pureWhite,
+                                              fontSize: 22,
+                                              fontWeight: FontWeight.w900,
+                                              letterSpacing: 1.3,
+                                              shadows: [
+                                                Shadow(
+                                                  color: Colors.black
+                                                      .withOpacity(0.2),
+                                                  blurRadius: 8,
+                                                  offset: const Offset(0, 2),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  );
+                                },
+                              ),
+                            ],
                           ),
-                          child: Form(
-                            key: _formKey,
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                SizedBox(
-                                    height: MediaQuery.of(context).size.height /
-                                        30),
-                                Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceEvenly,
+                        ],
+                      ),
+                    ),
+                  ),
+                  // Content Section
+                  Expanded(
+                    child: SingleChildScrollView(
+                      padding: const EdgeInsets.all(24.0),
+                      child: TweenAnimationBuilder<double>(
+                        duration: const Duration(milliseconds: 600),
+                        tween: Tween(begin: 0.0, end: 1.0),
+                        curve: Curves.easeOut,
+                        builder: (context, value, child) {
+                          return Transform.translate(
+                            offset: Offset(0, 30 * (1 - value)),
+                            child: Opacity(
+                              opacity: value,
+                              child: child,
+                            ),
+                          );
+                        },
+                        child: Card(
+                          elevation: 4,
+                          shadowColor: Colors.black.withOpacity(0.08),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: pureWhite,
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            padding: const EdgeInsets.all(24.0),
+                            child: Form(
+                              key: _formKey,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  // Form Title
+                                  Text(
+                                    "Edit Profile",
+                                    style: GoogleFonts.inter(
+                                      color: pureBlack,
+                                      fontSize: 22,
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 24),
+                                  // First Name and Last Name Row
+                                  Row(
                                     children: [
-                                      SizedBox(
-                                        width:
-                                            MediaQuery.of(context).size.width *
-                                                0.45,
-                                        child: TextFormField(
-                                          controller: fNameController,
-                                          autovalidateMode: AutovalidateMode
-                                              .onUserInteraction,
-                                          validator: (str) {
-                                            if (str!.isEmpty) {
-                                              return 'This field must not be empty';
-                                            }
-                                            return null;
+                                      Expanded(
+                                        child: TweenAnimationBuilder<double>(
+                                          duration:
+                                              const Duration(milliseconds: 400),
+                                          tween: Tween(begin: 0.0, end: 1.0),
+                                          curve: Curves.easeOut,
+                                          builder: (context, value, child) {
+                                            return Transform.translate(
+                                              offset:
+                                                  Offset(0, 15 * (1 - value)),
+                                              child: Opacity(
+                                                opacity: value,
+                                                child: child,
+                                              ),
+                                            );
                                           },
-                                          style: GoogleFonts.inter(
+                                          child: TextFormField(
+                                            controller: fNameController,
+                                            autovalidateMode: AutovalidateMode
+                                                .onUserInteraction,
+                                            validator: (str) {
+                                              if (str!.isEmpty) {
+                                                return 'This field must not be empty';
+                                              }
+                                              return null;
+                                            },
+                                            style: GoogleFonts.inter(
                                               color: pureBlack,
                                               fontSize: 16,
-                                              fontWeight: FontWeight.w400),
-                                          decoration: InputDecoration(
+                                              fontWeight: FontWeight.w500,
+                                            ),
+                                            decoration: InputDecoration(
+                                              labelText: "First name",
+                                              labelStyle: GoogleFonts.inter(
+                                                color: addressTextColor,
+                                                fontSize: 14,
+                                              ),
+                                              prefixIcon: Icon(
+                                                Icons.person_outline,
+                                                color: secondaryColor,
+                                              ),
                                               errorStyle: const TextStyle(
-                                                  fontSize: 0.01),
-                                              errorBorder: UnderlineInputBorder(
+                                                fontSize: 12,
+                                              ),
+                                              filled: true,
+                                              fillColor: greyBorderColor
+                                                  .withOpacity(0.05),
+                                              border: OutlineInputBorder(
                                                 borderRadius:
-                                                    BorderRadius.circular(5),
+                                                    BorderRadius.circular(16),
+                                                borderSide: BorderSide(
+                                                  color: greyBorderColor,
+                                                  width: 1,
+                                                ),
+                                              ),
+                                              enabledBorder: OutlineInputBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(16),
+                                                borderSide: BorderSide(
+                                                  color: greyBorderColor,
+                                                  width: 1,
+                                                ),
+                                              ),
+                                              focusedBorder: OutlineInputBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(16),
+                                                borderSide: BorderSide(
+                                                  color: secondaryColor,
+                                                  width: 2,
+                                                ),
+                                              ),
+                                              errorBorder: OutlineInputBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(16),
                                                 borderSide: const BorderSide(
                                                   color: Colors.red,
                                                   width: 1,
-                                                  style: BorderStyle.solid,
                                                 ),
                                               ),
-                                              helperStyle: GoogleFonts.inter(
-                                                  color: pureBlack,
-                                                  fontSize: 16,
-                                                  fontWeight: FontWeight.w400),
-                                              hintText: "First name",
-                                              border:
-                                                  const UnderlineInputBorder()),
+                                              contentPadding:
+                                                  const EdgeInsets.symmetric(
+                                                horizontal: 16,
+                                                vertical: 16,
+                                              ),
+                                            ),
+                                          ),
                                         ),
                                       ),
-                                      SizedBox(
-                                        width:
-                                            MediaQuery.of(context).size.width *
-                                                0.45,
-                                        child: TextFormField(
-                                          controller: lNameController,
-                                          autovalidateMode: AutovalidateMode
-                                              .onUserInteraction,
-                                          validator: (str) {
-                                            if (str!.isEmpty) {
-                                              return 'This field must not be empty';
-                                            }
-                                            return null;
+                                      const SizedBox(width: 16),
+                                      Expanded(
+                                        child: TweenAnimationBuilder<double>(
+                                          duration:
+                                              const Duration(milliseconds: 500),
+                                          tween: Tween(begin: 0.0, end: 1.0),
+                                          curve: Curves.easeOut,
+                                          builder: (context, value, child) {
+                                            return Transform.translate(
+                                              offset:
+                                                  Offset(0, 15 * (1 - value)),
+                                              child: Opacity(
+                                                opacity: value,
+                                                child: child,
+                                              ),
+                                            );
                                           },
-                                          style: GoogleFonts.inter(
+                                          child: TextFormField(
+                                            controller: lNameController,
+                                            autovalidateMode: AutovalidateMode
+                                                .onUserInteraction,
+                                            validator: (str) {
+                                              if (str!.isEmpty) {
+                                                return 'This field must not be empty';
+                                              }
+                                              return null;
+                                            },
+                                            style: GoogleFonts.inter(
                                               color: pureBlack,
                                               fontSize: 16,
-                                              fontWeight: FontWeight.w400),
-                                          decoration: InputDecoration(
+                                              fontWeight: FontWeight.w500,
+                                            ),
+                                            decoration: InputDecoration(
+                                              labelText: "Last name",
+                                              labelStyle: GoogleFonts.inter(
+                                                color: addressTextColor,
+                                                fontSize: 14,
+                                              ),
+                                              prefixIcon: Icon(
+                                                Icons.person_outline,
+                                                color: secondaryColor,
+                                              ),
                                               errorStyle: const TextStyle(
-                                                  fontSize: 0.01),
-                                              errorBorder: UnderlineInputBorder(
+                                                fontSize: 12,
+                                              ),
+                                              filled: true,
+                                              fillColor: greyBorderColor
+                                                  .withOpacity(0.05),
+                                              border: OutlineInputBorder(
                                                 borderRadius:
-                                                    BorderRadius.circular(5),
+                                                    BorderRadius.circular(16),
+                                                borderSide: BorderSide(
+                                                  color: greyBorderColor,
+                                                  width: 1,
+                                                ),
+                                              ),
+                                              enabledBorder: OutlineInputBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(16),
+                                                borderSide: BorderSide(
+                                                  color: greyBorderColor,
+                                                  width: 1,
+                                                ),
+                                              ),
+                                              focusedBorder: OutlineInputBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(16),
+                                                borderSide: BorderSide(
+                                                  color: secondaryColor,
+                                                  width: 2,
+                                                ),
+                                              ),
+                                              errorBorder: OutlineInputBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(16),
                                                 borderSide: const BorderSide(
                                                   color: Colors.red,
                                                   width: 1,
-                                                  style: BorderStyle.solid,
                                                 ),
                                               ),
-                                              helperStyle: GoogleFonts.inter(
-                                                  color: pureBlack,
-                                                  fontSize: 16,
-                                                  fontWeight: FontWeight.w400),
-                                              hintText: "Last name",
-                                              border:
-                                                  const UnderlineInputBorder()),
+                                              contentPadding:
+                                                  const EdgeInsets.symmetric(
+                                                horizontal: 16,
+                                                vertical: 16,
+                                              ),
+                                            ),
+                                          ),
                                         ),
                                       ),
-                                    ]),
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 15.0, vertical: 10),
-                                  child: Align(
-                                    alignment: Alignment.centerLeft,
+                                    ],
+                                  ),
+                                  const SizedBox(height: 20),
+                                  // Email Field
+                                  TweenAnimationBuilder<double>(
+                                    duration: const Duration(milliseconds: 600),
+                                    tween: Tween(begin: 0.0, end: 1.0),
+                                    curve: Curves.easeOut,
+                                    builder: (context, value, child) {
+                                      return Transform.translate(
+                                        offset: Offset(0, 15 * (1 - value)),
+                                        child: Opacity(
+                                          opacity: value,
+                                          child: child,
+                                        ),
+                                      );
+                                    },
                                     child: TextFormField(
                                       controller: mailController,
                                       autovalidateMode:
@@ -274,93 +493,139 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                         }
                                         return null;
                                       },
+                                      keyboardType: TextInputType.emailAddress,
                                       style: GoogleFonts.inter(
-                                          color: pureBlack,
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w400),
+                                        color: pureBlack,
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w500,
+                                      ),
                                       decoration: InputDecoration(
-                                          errorStyle:
-                                              const TextStyle(fontSize: 0.01),
-                                          errorBorder: UnderlineInputBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(5),
-                                            borderSide: const BorderSide(
-                                              color: Colors.red,
-                                              width: 1,
-                                              style: BorderStyle.solid,
-                                            ),
+                                        labelText: "Email id",
+                                        labelStyle: GoogleFonts.inter(
+                                          color: addressTextColor,
+                                          fontSize: 14,
+                                        ),
+                                        prefixIcon: Icon(
+                                          Icons.email_outlined,
+                                          color: secondaryColor,
+                                        ),
+                                        errorStyle: const TextStyle(
+                                          fontSize: 12,
+                                        ),
+                                        filled: true,
+                                        fillColor:
+                                            greyBorderColor.withOpacity(0.05),
+                                        border: OutlineInputBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(16),
+                                          borderSide: BorderSide(
+                                            color: greyBorderColor,
+                                            width: 1,
                                           ),
-                                          helperStyle: GoogleFonts.inter(
-                                              color: pureBlack,
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.w400),
-                                          hintText: "Email id",
-                                          border: const UnderlineInputBorder()),
+                                        ),
+                                        enabledBorder: OutlineInputBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(16),
+                                          borderSide: BorderSide(
+                                            color: greyBorderColor,
+                                            width: 1,
+                                          ),
+                                        ),
+                                        focusedBorder: OutlineInputBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(16),
+                                          borderSide: BorderSide(
+                                            color: secondaryColor,
+                                            width: 2,
+                                          ),
+                                        ),
+                                        errorBorder: OutlineInputBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(16),
+                                          borderSide: const BorderSide(
+                                            color: Colors.red,
+                                            width: 1,
+                                          ),
+                                        ),
+                                        contentPadding:
+                                            const EdgeInsets.symmetric(
+                                          horizontal: 16,
+                                          vertical: 16,
+                                        ),
+                                      ),
                                     ),
                                   ),
-                                ),
-                                SizedBox(
-                                    height: MediaQuery.of(context).size.height /
-                                        20),
-                                SizedBox(
-                                  width: MediaQuery.of(context).size.width,
-                                  height:
-                                      MediaQuery.of(context).size.height * 0.05,
-                                  child: Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 20.0),
-                                    child: CustomButton(
-                                        buttonLabel: 'Update',
-                                        buttonWidth: double.infinity,
-                                        backGroundColor:
-                                            /*isFilled ? Colors.grey :*/ buttonColor,
-                                        onTap: () async {
-                                          if (_formKey.currentState!
-                                              .validate()) {
-                                            if (isEmail(mailController.text)) {
-                                              LoadingOverlay.of(context).show();
-                                              await ApiService()
-                                                  .updateProfile(
-                                                firstName: fNameController.text,
-                                                lastName: lNameController.text,
-                                                email: mailController.text,
-                                              )
-                                                  .then((value) async {
-                                                print(value);
-                                                LoadingOverlay.of(context).hide();
-                                                if (value['success']) {
-                                                  notificationService.showToast(
-                                                      context, value['message'],
-                                                      type: NotificationType
-                                                          .success);
-                                                  Navigator.pop(context);
-                                                } else {
-                                                  notificationService.showToast(
-                                                      context, value['message'],
-                                                      type: NotificationType
-                                                          .error);
-                                                }
-                                              });
-                                            } else {
-                                              // LoadingOverlay.of(context).hide();
-                                              notificationService.showToast(
-                                                  context, "Enter valid email",
-                                                  type: NotificationType.error);
-                                            }
+                                  const SizedBox(height: 32),
+                                  // Update Button
+                                  SizedBox(
+                                    width: double.infinity,
+                                    height: 56,
+                                    child: ElevatedButton(
+                                      onPressed: () async {
+                                        if (_formKey.currentState!.validate()) {
+                                          if (isEmail(mailController.text)) {
+                                            LoadingOverlay.of(context).show();
+                                            await ApiService()
+                                                .updateProfile(
+                                              firstName: fNameController.text,
+                                              lastName: lNameController.text,
+                                              email: mailController.text,
+                                            )
+                                                .then((value) async {
+                                              LoadingOverlay.of(context).hide();
+                                              if (value['success']) {
+                                                notificationService.showToast(
+                                                  context,
+                                                  value['message'],
+                                                  type:
+                                                      NotificationType.success,
+                                                );
+                                                Navigator.pop(context);
+                                              } else {
+                                                notificationService.showToast(
+                                                  context,
+                                                  value['message'],
+                                                  type: NotificationType.error,
+                                                );
+                                              }
+                                            });
+                                          } else {
+                                            notificationService.showToast(
+                                              context,
+                                              "Enter valid email",
+                                              type: NotificationType.error,
+                                            );
                                           }
-                                        }),
+                                        }
+                                      },
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: buttonColor,
+                                        foregroundColor: pureWhite,
+                                        elevation: 0,
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(16),
+                                        ),
+                                      ),
+                                      child: Text(
+                                        'Update',
+                                        style: GoogleFonts.inter(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                    ),
                                   ),
-                                ),
-                                SizedBox(
-                                    height: MediaQuery.of(context).size.height /
-                                        50),
-                              ],
+                                ],
+                              ),
                             ),
                           ),
                         ),
-                      ],
+                      ),
                     ),
-                  )),
+                  ),
+                ],
+              ),
       ),
     );
   }

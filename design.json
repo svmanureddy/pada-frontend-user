@@ -1,0 +1,365 @@
+{
+  "app": {
+    "name": "Pada Delivery",
+    "version": "1.5.0+6",
+    "description": "Delivery app design system"
+  },
+  "colors": {
+    "primary": {
+      "primaryColor": "#0057E7",
+      "buttonColor": "#2A7BFF",
+      "secondaryColor": "#0058BF",
+      "accentColor": "#0285E0",
+      "resendOTPColor": "#1A47B8",
+      "changeOTPColor": "#001AFF",
+      "blue1": "#077EFF"
+    },
+    "neutral": {
+      "pureWhite": "#FFFFFF",
+      "pureBlack": "#000000",
+      "lightWhiteColor": "#F9F9F9",
+      "backgroundColor": "#F7F9FC",
+      "scaffoldBackgroundColor": "#18191A",
+      "transparentColor": "transparent"
+    },
+    "grey": {
+      "greyText": "#CDCDCE",
+      "addressTextColor": "#747474",
+      "greyColor": "#4E4E4E",
+      "greyBorderColor": "#C3C3C3",
+      "greyLight": "#808080",
+      "greyLight1": "#D3D3D4",
+      "greyLight2": "#595959",
+      "greyLight3": "#F4EFEF",
+      "greyLight4": "#F7F7F7",
+      "textColor": "#000000"
+    },
+    "status": {
+      "cancelStatusColor": "#9E0000",
+      "errorColor": "#FF3939",
+      "green1": "#01C997"
+    },
+    "gradient": {
+      "gradientColor1": "#193744",
+      "gradientColor2": "#858D8C",
+      "gradientColor1Light": "#A7FCF2",
+      "gradientColor2Light": "#A5BAB4"
+    },
+    "special": {
+      "scrollTopIconColor": "#702FFF",
+      "servicesWidgetBackgroundColor": "#242526",
+      "purpleColor": "deepPurple",
+      "orangeColor": "orangeAccent",
+      "contactColor1": "#00A3C9",
+      "boxShadowColor": "#F3F3F6"
+    }
+  },
+  "typography": {
+    "fontFamily": {
+      "primary": "Inter",
+      "secondary": "Poppins",
+      "tertiary": "Open Sans"
+    },
+    "fontSizes": {
+      "xs": 12,
+      "sm": 13,
+      "base": 14,
+      "md": 16,
+      "lg": 18,
+      "xl": 20,
+      "2xl": 24,
+      "3xl": 28,
+      "4xl": 32
+    },
+    "fontWeights": {
+      "regular": 400,
+      "medium": 500,
+      "semibold": 600,
+      "bold": 700,
+      "extrabold": 800,
+      "black": 900
+    },
+    "textStyles": {
+      "heading": {
+        "fontFamily": "Inter",
+        "fontSize": 20,
+        "fontWeight": 700,
+        "color": "#FFFFFF"
+      },
+      "subheading": {
+        "fontFamily": "Inter",
+        "fontSize": 18,
+        "fontWeight": 700,
+        "color": "#000000"
+      },
+      "body": {
+        "fontFamily": "Inter",
+        "fontSize": 16,
+        "fontWeight": 500,
+        "color": "#000000"
+      },
+      "bodySmall": {
+        "fontFamily": "Inter",
+        "fontSize": 14,
+        "fontWeight": 500,
+        "color": "#747474"
+      },
+      "caption": {
+        "fontFamily": "Inter",
+        "fontSize": 13,
+        "fontWeight": 400,
+        "color": "#747474"
+      },
+      "label": {
+        "fontFamily": "Inter",
+        "fontSize": 12,
+        "fontWeight": 600,
+        "color": "#000000"
+      },
+      "button": {
+        "fontFamily": "Inter",
+        "fontSize": 16,
+        "fontWeight": 600,
+        "color": "#FFFFFF"
+      }
+    }
+  },
+  "spacing": {
+    "xs": 4,
+    "sm": 8,
+    "md": 12,
+    "base": 16,
+    "lg": 20,
+    "xl": 24,
+    "2xl": 32,
+    "3xl": 40,
+    "4xl": 48
+  },
+  "borderRadius": {
+    "none": 0,
+    "sm": 5,
+    "base": 8,
+    "md": 10,
+    "lg": 12,
+    "xl": 16,
+    "2xl": 20,
+    "full": 9999
+  },
+  "shadows": {
+    "sm": {
+      "color": "rgba(0, 0, 0, 0.08)",
+      "blurRadius": 8,
+      "offset": {
+        "x": 0,
+        "y": 4
+      }
+    },
+    "md": {
+      "color": "rgba(0, 0, 0, 0.08)",
+      "blurRadius": 12,
+      "offset": {
+        "x": 0,
+        "y": 4
+      }
+    },
+    "lg": {
+      "color": "rgba(0, 0, 0, 0.1)",
+      "blurRadius": 16,
+      "offset": {
+        "x": 0,
+        "y": 8
+      }
+    },
+    "card": {
+      "color": "rgba(0, 0, 0, 0.08)",
+      "blurRadius": 4,
+      "offset": {
+        "x": 0,
+        "y": 4
+      }
+    }
+  },
+  "gradients": {
+    "primary": {
+      "type": "linear",
+      "direction": "topLeft to bottomRight",
+      "colors": ["#0057E7", "#003D9E", "#0058BF"],
+      "stops": [0.0, 0.5, 1.0]
+    },
+    "button": {
+      "type": "linear",
+      "direction": "left to right",
+      "colors": ["#2A7BFF", "#0058BF"],
+      "stops": [0.0, 1.0]
+    },
+    "header": {
+      "type": "linear",
+      "direction": "topCenter to bottomCenter",
+      "colors": ["#0057E7", "#0057E7"],
+      "stops": [0.0, 1.0]
+    }
+  },
+  "components": {
+    "button": {
+      "height": "dynamic (min 55px)",
+      "borderRadius": 10,
+      "padding": {
+        "horizontal": 16,
+        "vertical": 12
+      },
+      "primary": {
+        "backgroundColor": "#2A7BFF",
+        "textColor": "#FFFFFF",
+        "fontSize": 16,
+        "fontWeight": 600
+      },
+      "secondary": {
+        "backgroundColor": "#0058BF",
+        "textColor": "#FFFFFF",
+        "fontSize": 16,
+        "fontWeight": 600
+      },
+      "gradient": {
+        "colors": ["#2A7BFF", "#0058BF"],
+        "textColor": "#FFFFFF"
+      }
+    },
+    "card": {
+      "backgroundColor": "#FFFFFF",
+      "borderRadius": 16,
+      "padding": 20,
+      "elevation": 4,
+      "shadowColor": "rgba(0, 0, 0, 0.08)",
+      "border": {
+        "width": 1,
+        "color": "#C3C3C3"
+      }
+    },
+    "input": {
+      "borderRadius": 12,
+      "borderWidth": 1,
+      "borderColor": "#C3C3C3",
+      "focusedBorderColor": "#0058BF",
+      "focusedBorderWidth": 2,
+      "padding": {
+        "horizontal": 16,
+        "vertical": 12
+      },
+      "fontSize": 16,
+      "fontWeight": 500,
+      "textColor": "#000000",
+      "hintColor": "rgba(0, 0, 0, 0.5)"
+    },
+    "header": {
+      "height": "dynamic (10% of screen)",
+      "backgroundColor": "#0057E7",
+      "gradient": {
+        "colors": ["#0057E7", "#0057E7"]
+      },
+      "padding": {
+        "top": "statusBarHeight + 12",
+        "horizontal": 16,
+        "bottom": 20
+      },
+      "textColor": "#FFFFFF",
+      "fontSize": 20,
+      "fontWeight": 700
+    },
+    "bottomNavigation": {
+      "height": 70,
+      "backgroundColor": "#0057E7",
+      "borderRadius": {
+        "topLeft": 20,
+        "topRight": 20
+      },
+      "activeColor": "#FFFFFF",
+      "inactiveColor": "rgba(255, 255, 255, 0.6)"
+    }
+  },
+  "animations": {
+    "duration": {
+      "fast": 300,
+      "normal": 600,
+      "slow": 900
+    },
+    "curves": {
+      "easeOut": "Curves.easeOut",
+      "easeIn": "Curves.easeIn",
+      "easeInOut": "Curves.easeInOut"
+    },
+    "transitions": {
+      "slide": {
+        "begin": {
+          "x": 0,
+          "y": 0.3
+        },
+        "end": {
+          "x": 0,
+          "y": 0
+        }
+      },
+      "fade": {
+        "begin": 0.0,
+        "end": 1.0
+      }
+    }
+  },
+  "layout": {
+    "screenPadding": {
+      "horizontal": 16,
+      "vertical": 20
+    },
+    "cardSpacing": 20,
+    "sectionSpacing": 24,
+    "itemSpacing": 12
+  },
+  "icons": {
+    "size": {
+      "sm": 16,
+      "md": 24,
+      "lg": 32,
+      "xl": 40
+    },
+    "color": {
+      "default": "#000000",
+      "primary": "#0057E7",
+      "secondary": "#0058BF",
+      "white": "#FFFFFF",
+      "grey": "#747474"
+    }
+  },
+  "selection": {
+    "selected": {
+      "borderColor": "#0058BF",
+      "borderWidth": 2,
+      "backgroundColor": "rgba(0, 88, 191, 0.05)"
+    },
+    "unselected": {
+      "borderColor": "#C3C3C3",
+      "borderWidth": 1,
+      "backgroundColor": "transparent"
+    },
+    "indicator": {
+      "size": 24,
+      "selectedColor": "#0058BF",
+      "unselectedColor": "#C3C3C3",
+      "checkmarkColor": "#FFFFFF"
+    }
+  },
+  "paymentMethod": {
+    "card": {
+      "borderRadius": 12,
+      "padding": 16,
+      "selected": {
+        "borderColor": "#0058BF",
+        "borderWidth": 2,
+        "backgroundColor": "rgba(0, 88, 191, 0.05)"
+      },
+      "unselected": {
+        "borderColor": "#C3C3C3",
+        "borderWidth": 1,
+        "backgroundColor": "transparent"
+      }
+    }
+  }
+}

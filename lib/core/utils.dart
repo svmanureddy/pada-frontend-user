@@ -40,14 +40,14 @@ Future<Placemark> getAddressFromLatLong(
 String getDate(String dateString) {
   final date = DateTime.parse(dateString).toUtc().toLocal();
   final format = DateFormat('yyyy-MM-dd HH:mm:ss');
-  print(format.format(date));
+  debugPrint(format.format(date));
   return format.format(date).toString();
 }
 
 String getTimeFromDate(String dateString) {
   final date = DateTime.parse(dateString).toUtc().toLocal();
   final format = DateFormat('H:mm:a');
-  // print(format.format(date));
+  // debugPrint(format.format(date));
   return format.format(date).toString();
 }
 
@@ -61,10 +61,9 @@ Future<Uint8List> getBytesFromAsset(String path, int width) async {
       .asUint8List();
 }
 
-
 Future<void> launchURL(Uri uri) async {
   if (await canLaunchUrl(uri)) {
-    await launchUrl(uri);
+    await launchUrl(uri, mode: LaunchMode.externalApplication);
   } else {
     throw 'Could not launch ${uri.path}';
   }
